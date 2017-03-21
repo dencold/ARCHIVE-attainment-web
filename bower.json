@@ -1,8 +1,6 @@
 {
-  "name": "polymer-starter-kit",
-  "authors": [
-    "The Polymer Authors"
-  ],
+  "name": "attainment-web",
+  "authors": ["dencold"],
   "license": "https://polymer.github.io/LICENSE.txt",
   "dependencies": {
     "app-layout": "PolymerElements/app-layout#2.0-preview",
