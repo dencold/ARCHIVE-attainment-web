@@ -9,6 +9,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-app.html">
 <link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
 <link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
 <link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
@@ -62,6 +63,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         font-weight: bold;
       }
     </style>
+
+    <firebase-app
+      id="firebase"
+      auth-domain="attainment-6017d.firebaseapp.com"
+      database-url="https://attainment-6017d.firebaseio.com"
+      api-key="AIzaSyDs8E_p1Uyiq9mLcBC6G__Kdzu3ggkgt9I">
+    </firebase-app>
 
     <app-location route="{{route}}"></app-location>
     <app-route
