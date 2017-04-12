@@ -1,0 +1,55 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="page-projects">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+
+        padding: 10px;
+      }
+    </style>
+
+    <firebase-auth user="{{user}}"></firebase-auth>
+
+    <template is="dom-if" if="[[user]]">
+      <firebase-query
+        id="query"
+        path="/users/[[user.uid]]/projects"
+        data="{{projects}">
+      </firebase-query>
+
+      <div id="card">
+        <div id="projects">
+          <ul id="projects-list">
+            <template is="dom-repeat" items="[[projects]]" as="project">
+              <li>[[project.name]]</li>
+            </template>
+          </ul>
+        </div>
+      </div>
+
+    </template>
+
+  </template>
+
+  <script>
+    class PageProjects extends Polymer.Element {
+      static get is() { return 'page-projects'; }
+
+      static get properties() {
+        return {
+          projects: {
+            type: Object
+          }
+        }
+      }
+    }
+
+    window.customElements.define(PageProjects.is, PageProjects);
+  </script>
+</dom-module>
