@@ -1,5 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="shared-styles.html">
@@ -15,27 +16,26 @@
     </style>
 
     <firebase-auth user="{{user}}"></firebase-auth>
+    <firebase-query
+      id="query"
+      path="/users/[[user.uid]]/projects"
+      data="{{projects}}">
+    </firebase-query>
 
     <h1>Projects</h1>
 
-    <template is="dom-if" if="[[user]]">
-      <firebase-query
-        id="query"
-        path="/users/[[user.uid]]/projects"
-        data="{{projects}">
-      </firebase-query>
+    <paper-input id="input" label="Add project"></paper-input>
+    <paper-button id="add" on-tap="add">Add</paper-button>
 
-      <div id="card">
-        <div id="projects">
-          <ul id="projects-list">
-            <template is="dom-repeat" items="[[projects]]" as="project">
-              <li>[[project.name]]</li>
-            </template>
-          </ul>
-        </div>
+    <div id="card">
+      <div id="projects">
+        <ul id="projects-list">
+          <template is="dom-repeat" items="[[projects]]" as="project">
+            <li>[[project.name]]</li>
+          </template>
+        </ul>
       </div>
-
-    </template>
+    </div>
 
   </template>
 
@@ -49,6 +49,12 @@
             type: Object
           }
         }
+      }
+
+      add() {
+        this.$.query.ref.push({
+          name: this.$.input.value
+        });
       }
     }
 
