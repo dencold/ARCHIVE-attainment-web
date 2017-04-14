@@ -1,0 +1,67 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="page-projects">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+
+        padding: 10px;
+      }
+    </style>
+
+    <firebase-auth user="{{user}}"></firebase-auth>
+    <firebase-query
+      id="query"
+      path="/users/[[user.uid]]/projects/[[inboxId]]" data="{{tasks}}">
+    </firebase-query>
+
+    <h1>Inbox</h1>
+
+    <paper-input id="input" label="Add task"></paper-input>
+    <paper-button id="add" on-tap="add">Add</paper-button>
+
+    <div id="card">
+      <div id="tasks">
+        <ul id="task-list">
+          <template is="dom-repeat" items="[[tasks]]" as="task">
+            <li>[[task.name]]</li>
+          </template>
+        </ul>
+      </div>
+    </div>
+
+  </template>
+
+  <script>
+    class PageInbox extends Polymer.Element {
+      static get is() { return 'page-inbox'; }
+
+      static get properties() {
+        return {
+          inboxId: {
+            type: String,
+            value: "-KigKQumup1ZYtd5_rjO"
+          },
+          tasks: {
+            type: Object
+          }
+        }
+      }
+
+      add() {
+        this.$.query.ref.push({
+          name: this.$.input.value,
+          createdAt: Date.now()
+        });
+      }
+    }
+
+    window.customElements.define(PageProjects.is, PageProjects);
+  </script>
+</dom-module>
