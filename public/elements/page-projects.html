@@ -53,7 +53,8 @@
 
       add() {
         this.$.query.ref.push({
-          name: this.$.input.value
+          name: this.$.input.value,
+          createdAt: Date.now()
         });
       }
     }
