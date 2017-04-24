@@ -5,7 +5,7 @@
 <link rel="import" href="../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="shared-styles.html">
 
-<dom-module id="page-inbox">
+<dom-module id="page-project-detail">
   <template>
     <style include="shared-styles">
       :host {
@@ -39,14 +39,14 @@
   </template>
 
   <script>
-    class PageInbox extends Polymer.Element {
-      static get is() { return 'page-inbox'; }
+    class PageProjectDetail extends Polymer.Element {
+      static get is() { return 'page-project-detail'; }
 
       static get properties() {
         return {
           inboxId: {
             type: String,
-            value: "-KigKQumup1ZYtd5_rjO"
+            value: "-KihIWrN5C8w5RNLV5g4"
           },
           tasks: {
             type: Object
@@ -62,6 +62,6 @@
       }
     }
 
-    window.customElements.define(PageInbox.is, PageInbox);
+    window.customElements.define(PageProjectDetail.is, PageProjectDetail);
   </script>
 </dom-module>
