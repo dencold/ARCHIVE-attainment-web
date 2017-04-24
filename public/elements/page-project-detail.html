@@ -18,7 +18,7 @@
     <firebase-auth user="{{user}}"></firebase-auth>
     <firebase-query
       id="query"
-      path="/users/[[user.uid]]/projects/[[inboxId]]" data="{{tasks}}">
+      path="/users/[[user.uid]]/projects/[[projectId]]" data="{{tasks}}">
     </firebase-query>
 
     <h1>Inbox</h1>
@@ -44,10 +44,7 @@
 
       static get properties() {
         return {
-          inboxId: {
-            type: String,
-            value: "-KihIWrN5C8w5RNLV5g4"
-          },
+          projectId: String,
           tasks: {
             type: Object
           }
