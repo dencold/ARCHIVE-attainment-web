@@ -2,6 +2,7 @@
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="shared-styles.html">
 
@@ -14,15 +15,26 @@
         padding: 10px;
       }
     </style>
+  
+    <app-route
+        route="{{route}}"
+        pattern="/:id"
+        data="{{routeData}}">
+    </app-route>
 
     <firebase-auth user="{{user}}"></firebase-auth>
+    <firebase-document
+      id="projectQuery"
+      path="/users/[[user.uid]]/projects/[[routeData.id]]"
+      data="{{project}}">
+    </firebase-document>
     <firebase-query
-      id="query"
-      path="/users/[[user.uid]]/projects/[[projectId]]" data="{{tasks}}">
+      id="tasksQuery"
+      path="/users/[[user.uid]]/projects/[[routeData.id]]/tasks"
+      data="{{tasks}}">
     </firebase-query>
 
-    <h1>Inbox</h1>
-
+    <h1>[[project.name]]</h1>
     <paper-input id="input" label="Add task"></paper-input>
     <paper-button id="add" on-tap="add">Add</paper-button>
 
@@ -44,7 +56,10 @@
 
       static get properties() {
         return {
-          projectId: String,
+          route: Object,
+          project: {
+            type: Object
+          },
           tasks: {
             type: Object
           }
@@ -52,7 +67,7 @@
       }
 
       add() {
-        this.$.query.ref.push({
+        this.$.tasksQuery.ref.push({
           name: this.$.input.value,
           createdAt: Date.now()
         });

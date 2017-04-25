@@ -78,7 +78,7 @@
       <app-drawer id="drawer" slot="drawer">
         <app-toolbar>Menu</app-toolbar>
         <iron-selector selected="[[routeData.page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="inbox" href="/inbox">Inbox</a>
+          <a name="inbox" href="/project-detail/[[inboxProject.id]]">Inbox</a>
           <a name="projects" href="/projects">Projects</a>
           <a name="settings" href="/settings">Settings</a>
           <a name="view1" href="/view1">View One</a>
@@ -100,7 +100,7 @@
             attr-for-selected="name"
             fallback-selection="view404"
             role="main">
-          <page-project-detail name="inbox" project-id="-KihIWrN5C8w5RNLV5g4"></page-project-detail>
+          <page-project-detail name="project-detail" route="[[subroute]]"></page-project-detail>
           <page-projects name="projects"></page-projects>
           <page-settings name="settings"></page-settings>
           <page-view1 name="view1"></page-view1>
@@ -113,6 +113,17 @@
   <script>
     class MyApp extends Polymer.Element {
       static get is() { return 'my-app'; }
+
+      static get properties() {
+        return {
+          inboxProject: {
+            type: Object,
+            value: {
+              id: "-KihIWrN5C8w5RNLV5g4"
+            }
+          }
+        }
+      }
     }
 
     window.customElements.define(MyApp.is, MyApp);

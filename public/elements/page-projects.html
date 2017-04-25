@@ -31,7 +31,7 @@
       <div id="projects">
         <ul id="projects-list">
           <template is="dom-repeat" items="[[projects]]" as="project">
-            <li>[[project.name]]</li>
+            <li>key: [[project.$key]] | [[project.name]] | [[project.createdAt]]</li>
           </template>
         </ul>
       </div>
