@@ -1,0 +1,87 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="page-task-detail">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+
+        padding: 10px;
+      }
+    </style>
+  
+    <app-route
+        route="{{route}}"
+        pattern="/:id"
+        data="{{routeData}}">
+    </app-route>
+
+    <firebase-auth user="{{user}}"></firebase-auth>
+    <firebase-query
+      id="projectQuery"
+      path="/users/[[user.uid]]/projects"
+      data="{{projects}}">
+    </firebase-query>
+    <firebase-document
+      id="tasksQuery"
+      path="/users/[[user.uid]]/tasks/[[routeData.id]]"
+      data="{{task}}">
+    </firebase-document>
+    <firebase-document
+      id="currProj"
+      path="/users/[[user.uid]]/projects/[[task.projectId]]"
+      data="{{currProject}}">
+    </firebase-document>
+
+
+    <paper-input value="{{task.name}}" label="Name"></paper-input>
+    <p>Current Project: [[currProject.name]]</p>
+    <paper-dropdown-menu label="Change Project">
+      <paper-listbox slot="dropdown-content" attr-for-selected="val" selected="{{newProject}}">
+          <template is="dom-repeat" items="[[projects]]" as="project">
+            <paper-item val$="[[project.$key]]">[[project.name]]</paper-item>
+          </template>
+      </paper-listbox>
+    </paper-dropdown-menu>
+
+    <p hidden$="[[!task.gmailThreadId]]">Gmail: [[task.gmailThreadId]]</p>
+
+  </template>
+
+  <script>
+    class PageTaskDetail extends Polymer.Element {
+      static get is() { return 'page-task-detail'; }
+
+      static get properties() {
+        return {
+          route: Object,
+          routeData: Object,
+          projects: Object,
+          task: {
+            type: Object,
+            notify: true
+          },
+          newProject: {
+            type: String,
+            observer: '_changeProject'
+          }
+        }
+      }
+
+      _changeProject(newVal, oldVal) {
+        this.$.tasksQuery.ref.child('projectId').set(newVal);
+      }
+    }
+
+    window.customElements.define(PageTaskDetail.is, PageTaskDetail);
+  </script>
+</dom-module>

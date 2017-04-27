@@ -44,7 +44,9 @@
       <div id="tasks">
         <ul id="task-list">
           <template is="dom-repeat" items="[[tasks]]" as="task">
-            <li>[[task.name]]</li>
+            <a href="/task/[[task.$key]]">
+              <li>[[task.name]]</li>
+            </a>
           </template>
         </ul>
       </div>
@@ -73,7 +75,8 @@
         this.$.tasksQuery.ref.push({
           name: this.$.input.value,
           createdAt: Date.now(),
-          projectId: this.routeData.id
+          projectId: this.routeData.id,
+          projectName: this.project.name
         });
       }
     }

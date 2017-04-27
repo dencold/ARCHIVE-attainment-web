@@ -19,7 +19,11 @@
     "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0-rc.4",
     "polymerfire": "firebase/polymerfire#2.0-preview",
     "paper-button": "PolymerElements/paper-button#2.0-preview",
-    "paper-input": "PolymerElements/paper-input#2.0-preview"
+    "paper-input": "PolymerElements/paper-input#2.0-preview",
+    "paper-dropdown-menu": "PolymerElements/paper-dropdown-menu#2.0-preview",
+    "paper-listbox": "PolymerElements/paper-listbox#2.0-preview",
+    "paper-item": "PolymerElements/paper-item#2.0-preview",
+    "web-animations-js": "^2.2.5"
   },
   "resolutions": {
     "polymer": "^2.0.0-rc.1"
