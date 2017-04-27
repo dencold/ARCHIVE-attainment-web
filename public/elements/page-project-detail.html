@@ -30,7 +30,9 @@
     </firebase-document>
     <firebase-query
       id="tasksQuery"
-      path="/users/[[user.uid]]/projects/[[routeData.id]]/tasks"
+      path="/users/[[user.uid]]/tasks"
+      order-by-child="projectId"
+      equal-to="[[routeData.id]]"
       data="{{tasks}}">
     </firebase-query>
 
@@ -57,6 +59,7 @@
       static get properties() {
         return {
           route: Object,
+          routeData: Object,
           project: {
             type: Object
           },
@@ -69,7 +72,8 @@
       add() {
         this.$.tasksQuery.ref.push({
           name: this.$.input.value,
-          createdAt: Date.now()
+          createdAt: Date.now(),
+          projectId: this.routeData.id
         });
       }
     }
