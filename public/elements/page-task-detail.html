@@ -1,6 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
@@ -53,6 +54,8 @@
       </paper-listbox>
     </paper-dropdown-menu>
 
+    <paper-textarea label="Notes" value={{task.notes}}></paper-textarea>
+
     <p hidden$="[[!task.gmailThreadId]]">Gmail: [[task.gmailThreadId]]</p>
 
   </template>
@@ -66,6 +69,7 @@
           route: Object,
           routeData: Object,
           projects: Object,
+          notes: String,
           task: {
             type: Object,
             notify: true
@@ -80,6 +84,7 @@
       _changeProject(newVal, oldVal) {
         this.$.tasksQuery.ref.child('projectId').set(newVal);
       }
+      
     }
 
     window.customElements.define(PageTaskDetail.is, PageTaskDetail);
