@@ -42,7 +42,10 @@
       path="/users/[[user.uid]]/projects/[[task.projectId]]"
       data="{{currProject}}">
     </firebase-document>
-
+    <firebase-document
+      id="archiveQuery"
+      path="/users/[[user.uid]]/archived/tasks/[[routeData.id]]">
+    </firebase-document>
 
     <paper-input value="{{task.name}}" label="Name"></paper-input>
     <p>Current Project: [[currProject.name]]</p>
@@ -58,6 +61,8 @@
 
     <p hidden$="[[!task.gmailThreadId]]">Gmail: [[task.gmailThreadId]]</p>
 
+    <paper-button id="done" on-tap="done">Done!</paper-button>
+
   </template>
 
   <script>
@@ -66,10 +71,10 @@
 
       static get properties() {
         return {
-          route: Object,
-          routeData: Object,
-          projects: Object,
-          notes: String,
+          router: {
+            type: Object,
+            notify: true
+          },
           task: {
             type: Object,
             notify: true
@@ -79,6 +84,24 @@
             observer: '_changeProject'
           }
         }
+      }
+
+      done() {
+        // first set the completedAt property
+        this.task.completedAt = Date.now();
+
+        // move the task to our archive
+        this.$.archiveQuery.ref.set(this.task)
+          .then( () => this._removeTask())
+          .catch(error => console.log("ERROR archiving task: " + error.message));
+      }
+
+      _removeTask() {
+        // we'll want to switch back to project view after we delete
+        var projectId = this.task.projectId;
+        this.$.tasksQuery.ref.remove();
+
+        this.set('router.path', '/project-detail/' + projectId);
       }
 
       _changeProject(newVal, oldVal) {

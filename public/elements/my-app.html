@@ -72,7 +72,7 @@
         route="{{route}}"
         pattern="/:page"
         data="{{routeData}}"
-        tail="{{subroute}}"></app-route>
+        tail="{{tail}}"></app-route>
 
     <app-drawer-layout fullbleed>
       <!-- Drawer content -->
@@ -101,8 +101,8 @@
             attr-for-selected="name"
             fallback-selection="view404"
             role="main">
-          <page-project-detail name="project-detail" route="[[subroute]]"></page-project-detail>
-          <page-task-detail name="task" route="[[subroute]]"></page-task-detail>
+          <page-project-detail name="project-detail" router="{{route}}" route="[[tail]]"></page-project-detail>
+          <page-task-detail name="task" router="{{route}}" route="[[tail]]"></page-task-detail>
           <page-projects name="projects"></page-projects>
           <page-settings name="settings"></page-settings>
           <page-view1 name="view1"></page-view1>
