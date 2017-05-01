@@ -1,5 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
 <link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
 <link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
@@ -66,7 +67,8 @@
       database-url="https://attainment-6017d.firebaseio.com"
       api-key="AIzaSyDs8E_p1Uyiq9mLcBC6G__Kdzu3ggkgt9I">
     </firebase-app>
-
+    <firebase-auth id="auth" user="{{user}}"></firebase-auth>
+    
     <app-location route="{{route}}"></app-location>
     <app-route
         route="{{route}}"
@@ -74,6 +76,7 @@
         data="{{routeData}}"
         tail="{{tail}}"></app-route>
 
+    <template is="dom-if" if="[[user]]">
     <app-drawer-layout fullbleed>
       <!-- Drawer content -->
       <app-drawer id="drawer" slot="drawer">
@@ -110,6 +113,21 @@
         </iron-pages>
       </app-header-layout>
     </app-drawer-layout>
+    </template>
+
+    <template is="dom-if" if="[[!user]]">
+      <div style="margin: 0 auto; width: 500px">  
+        <img src="/images/attain-logo.jpg" height="500px" width="500px" />
+      </div>
+      <div style="margin: 0 auto; width: 500px">
+        <paper-input value="{{email}}" type="email" label="Email Address"></paper-input>
+        <paper-input value="{{password}}" type="password" label="Password"></paper-input>
+      </div>
+      <div style="margin: 0 auto; width: 75px">
+        <paper-button on-tap="login">Log in</paper-button>
+      </div>
+   </template> 
+
   </template>
 
   <script>
@@ -123,9 +141,31 @@
             value: {
               id: "-KihIWrN5C8w5RNLV5g4"
             }
+          },
+          email: {
+            type: String,
+            notify: true
+          },
+          password: {
+            type: String,
+            notify: true
           }
         }
       }
+
+      login() {
+        this.$.auth.signInWithEmailAndPassword(
+          this.email,
+          this.password
+        ).then( () => this.resetLogin()
+        ).catch(error => console.log("ERROR: " + error.message));
+      }
+
+      resetLogin() {
+        this.email = "";
+        this.password = "";
+      }
+
     }
 
     window.customElements.define(MyApp.is, MyApp);
