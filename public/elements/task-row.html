@@ -1,3 +1,4 @@
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
@@ -5,25 +6,37 @@
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-query.html">
-<link rel="import" href="task-row.html">
 <link rel="import" href="shared-styles.html">
 
-<dom-module id="page-project-detail">
+<dom-module id="task-row">
   <template>
     <style include="shared-styles">
       :host {
-        display: block;
 
-        padding: 10px;
+        padding: 5px;
+      }
+      .item {
+        padding: 5px;
+      }
+      .date {
+        width: 110px;
+      }
+      .name {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     </style>
-  
+    <style include="iron-flex"></style> 
+    <style include="iron-flex-factors"></style> 
+
     <app-route
         route="{{route}}"
         pattern="/:id"
         data="{{routeData}}">
     </app-route>
 
+    <!--
     <firebase-auth user="{{user}}"></firebase-auth>
     <firebase-document
       id="projectQuery"
@@ -37,26 +50,38 @@
       equal-to="[[routeData.id]]"
       data="{{tasks}}">
     </firebase-query>
-
-    <h1>[[project.name]]</h1>
-    <paper-textarea label="Notes" value={{project.notes}}></paper-textarea>
+    -->
+    <div id="row" class="layout horizontal">
+      <div class="item">X</div>
+      <div class="item name flex-6">
+        <a href="/task/[[task.$key]]">[[task.name]]</a>
+      </div>
+      <div class="item flex-2">Inbox</div>
+      <div class="item date flex-auto">Mar 13, 2017</div>
+    </div>
     
-    <paper-input id="input" label="Add task"></paper-input>
-    <paper-button id="add" on-tap="add">Add</paper-button>
-
-    <template is="dom-repeat" items="[[tasks]]" as="task">
-      <task-row task="[[task]]"></task-row>
-    </template>
-
+<!--
+    <div id="card">
+      <div id="tasks">
+        <ul id="task-list">
+          <template is="dom-repeat" items="[[tasks]]" as="task">
+            <a href="/task/[[task.$key]]">
+              <li>[[task.name]]</li>
+            </a>
+          </template>
+        </ul>
+      </div>
+    </div>
+-->
   </template>
 
   <script>
-    class PageProjectDetail extends Polymer.Element {
-      static get is() { return 'page-project-detail'; }
+    class TaskRow extends Polymer.Element {
+      static get is() { return 'task-row'; }
 
       static get properties() {
         return {
-          route: Object,
+          task: Object,
           routeData: Object,
           project: {
             type: Object
@@ -67,16 +92,8 @@
         }
       }
 
-      add() {
-        this.$.tasksQuery.ref.push({
-          name: this.$.input.value,
-          createdAt: Date.now(),
-          projectId: this.routeData.id,
-          projectName: this.project.name
-        });
-      }
     }
 
-    window.customElements.define(PageProjectDetail.is, PageProjectDetail);
+    window.customElements.define(TaskRow.is, TaskRow);
   </script>
 </dom-module>
