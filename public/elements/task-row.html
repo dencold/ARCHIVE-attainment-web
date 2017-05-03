@@ -1,12 +1,7 @@
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../bower_components/paper-input/paper-textarea.html">
-<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
-<link rel="import" href="../bower_components/polymerfire/firebase-document.html">
-<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="shared-styles.html">
+<link rel="import" href="task-manager.html">
 
 <dom-module id="task-row">
   <template>
@@ -26,33 +21,17 @@
         overflow: hidden;
         text-overflow: ellipsis;
       }
+      .complete {
+        cursor: pointer;
+      }
     </style>
     <style include="iron-flex"></style> 
     <style include="iron-flex-factors"></style> 
 
-    <app-route
-        route="{{route}}"
-        pattern="/:id"
-        data="{{routeData}}">
-    </app-route>
+    <task-manager id="taskMgr"></task-manager>
 
-    <!--
-    <firebase-auth user="{{user}}"></firebase-auth>
-    <firebase-document
-      id="projectQuery"
-      path="/users/[[user.uid]]/projects/[[routeData.id]]"
-      data="{{project}}">
-    </firebase-document>
-    <firebase-query
-      id="tasksQuery"
-      path="/users/[[user.uid]]/tasks"
-      order-by-child="projectId"
-      equal-to="[[routeData.id]]"
-      data="{{tasks}}">
-    </firebase-query>
-    -->
     <div id="row" class="layout horizontal">
-      <div class="item">X</div>
+      <div class="item complete" on-tap="complete">X</div>
       <div class="item name flex-6">
         <a href="/task/[[task.$key]]">[[task.name]]</a>
       </div>
@@ -60,19 +39,6 @@
       <div class="item date flex-auto">Mar 13, 2017</div>
     </div>
     
-<!--
-    <div id="card">
-      <div id="tasks">
-        <ul id="task-list">
-          <template is="dom-repeat" items="[[tasks]]" as="task">
-            <a href="/task/[[task.$key]]">
-              <li>[[task.name]]</li>
-            </a>
-          </template>
-        </ul>
-      </div>
-    </div>
--->
   </template>
 
   <script>
@@ -82,14 +48,11 @@
       static get properties() {
         return {
           task: Object,
-          routeData: Object,
-          project: {
-            type: Object
-          },
-          tasks: {
-            type: Object
-          }
         }
+      }
+
+      complete() {
+        this.$.taskMgr.complete(this.task.$key);
       }
 
     }
