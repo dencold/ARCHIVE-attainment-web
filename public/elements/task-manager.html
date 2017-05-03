@@ -1,0 +1,53 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+
+<dom-module id="task-manager">
+  <template>
+  
+    <firebase-auth user="{{user}}"></firebase-auth> 
+    <firebase-query
+      id="taskDB"
+      path="/users/[[user.uid]]/tasks">
+    </firebase-query>
+    <firebase-query
+      id="archiveDB"
+      path="/users/[[user.uid]]/archived/tasks">
+    </firebase-query>
+
+  </template>
+
+  <script>
+    class TaskManager extends Polymer.Element {
+      static get is() { return 'task-manager'; }
+
+      static get properties() {
+        return {
+          user: Object
+        }
+      }
+
+      complete(taskId) {
+        var taskRef = this.$.taskDB.ref.child(taskId);
+        var archiveRef = this.$.archiveDB.ref.child(taskId);
+
+        // we need to do three things:
+        // 1. get the val for this task id in firebase & set its completedAt property
+        // 2. copy its value data into the archive reference
+        // 3. delete the task reference
+        taskRef.once('value')
+          .then( snap => {
+            snap.val().completedAt = Date.now();
+            return snap.val();})
+          .then(snap => archiveRef.set(snap))
+          .then(() => taskRef.remove())
+          .then(() => console.log("FINISHED!"))
+          .catch(error => console.log("ERROR archiving task: " + error.message));
+      }
+
+    }
+
+    window.customElements.define(TaskManager.is, TaskManager);
+  </script>
+</dom-module>
