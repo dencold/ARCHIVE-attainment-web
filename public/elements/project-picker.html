@@ -13,12 +13,6 @@
         box-shadow: 0px 2px 6px #ccc;
         list-style: none;
       }
-      ul, li {
-        display: block;
-        position: relative;
-        margin: 0;
-        padding: 0;
-      }
     </style>
     <firebase-auth user="{{user}}"></firebase-auth> 
     <firebase-query
@@ -28,11 +22,13 @@
     </firebase-query>
 
     <iron-dropdown id="dropdown">
-      <ul slot="dropdown-content">
+        <div slot="dropdown-content"> 
+          <iron-selector id="selector" selected="{{selectedProject}}" attr-for-selected="val">
         <template is="dom-repeat" items="[[projects]]" as="project">
-          <li val$="[[project.$key]]">[[project.name]]</li>
+          <div val$="[[project]]" >[[project.name]]</div>
         </template>
-      </ul>
+      </iron-selector>
+        </div>
     </iron-dropdown>
   </template>
 
@@ -42,8 +38,8 @@
 
       static get properties() {
         return {
-          newProject: {
-            type: String,
+          selectedProject: {
+            type: Object,
             observer: '_changeProject'
           }
         }
@@ -54,7 +50,10 @@
       }
 
       _changeProject(newVal, oldVal) {
-        console.log(newVal);
+        this.dispatchEvent(new CustomEvent('project-selected',
+          {detail: {project: newVal}}));
+        
+        this.toggle();
       }
 
     }
