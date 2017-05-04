@@ -1,14 +1,25 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
-<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/iron-dropdown/iron-dropdown.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
-<link rel="import" href="../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-query.html">
 
 <dom-module id="project-picker">
   <template>
-  
+    <style>
+      [slot="dropdown-content"] {
+        background-color: white;
+        line-height: 40px;
+        padding: 0 10px 0 10px;
+        box-shadow: 0px 2px 6px #ccc;
+        list-style: none;
+      }
+      ul, li {
+        display: block;
+        position: relative;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
     <firebase-auth user="{{user}}"></firebase-auth> 
     <firebase-query
       id="projectQuery"
@@ -16,13 +27,13 @@
       data="{{projects}}">
     </firebase-query>
 
-    <paper-dropdown-menu label="Change Project">
-      <paper-listbox slot="dropdown-content" attr-for-selected="val" selected="{{newProject}}">
-          <template is="dom-repeat" items="[[projects]]" as="project">
-            <paper-item val$="[[project.$key]]">[[project.name]]</paper-item>
-          </template>
-      </paper-listbox>
-    </paper-dropdown-menu>
+    <iron-dropdown id="dropdown">
+      <ul slot="dropdown-content">
+        <template is="dom-repeat" items="[[projects]]" as="project">
+          <li val$="[[project.$key]]">[[project.name]]</li>
+        </template>
+      </ul>
+    </iron-dropdown>
   </template>
 
   <script>
@@ -36,6 +47,10 @@
             observer: '_changeProject'
           }
         }
+      }
+
+      toggle() {
+        this.$.dropdown.toggle();
       }
 
       _changeProject(newVal, oldVal) {
