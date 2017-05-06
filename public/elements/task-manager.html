@@ -33,19 +33,24 @@
         var archiveRef = this.$.archiveDB.ref.child(taskId);
 
         // we need to do three things:
-        // 1. get the val for this task id in firebase & set its completedAt property
+        // 1. get the task in firebase & set its completedAt property
         // 2. copy its value data into the archive reference
         // 3. delete the task reference
         taskRef.once('value')
           .then( snap => {
-            snap.val().completedAt = Date.now();
-            return snap.val();})
-          .then(snap => archiveRef.set(snap))
+            var task = snap.val();
+            task.completedAt = Date.now();
+            archiveRef.set(task); })
           .then(() => taskRef.remove())
-          .then(() => console.log("FINISHED!"))
           .catch(error => console.log("ERROR archiving task: " + error.message));
       }
+      
+      updateProject(taskId, projectId) {
+        var taskRef = this.$.taskDB.ref.child(taskId);
 
+        taskRef.update({projectId: projectId})
+          .catch(error => console.log("ERROR updating project: " + error.message));
+      }
     }
 
     window.customElements.define(TaskManager.is, TaskManager);
