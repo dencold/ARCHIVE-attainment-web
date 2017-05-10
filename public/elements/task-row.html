@@ -48,7 +48,7 @@
         <project-picker id="picker"></project-picker>
       </div>
       <div class="item date flex-auto" on-tap="pickDate">
-        [[formattedDate]]
+        [[formattedDue]]
       </div>
     </div>
     
@@ -61,10 +61,9 @@
       static get properties() {
         return {
           task: Object,
-          dueDate: Number,
-          formattedDate: {
+          formattedDue: {
             type: String,
-            computed: 'formatDate(task)'
+            computed: 'formatDate(task.dueAt)'
           }
         }
       }
@@ -90,7 +89,7 @@
         }
       }
 
-      formatDate(task) {
+      formatDate(dueAt) {
         var monthNames = [
           "Jan", "Feb", "Mar",
           "Apr", "May", "Jun", "Jul",
@@ -98,7 +97,11 @@
           "Nov", "Dec"
         ];
 
-        var due = new Date(task.createdAt);
+        if (!dueAt) {
+          return "-";
+        }
+
+        var due = new Date(dueAt);
         var day = due.getDate();
         var monthIndex = due.getMonth();
         var year = due.getFullYear();
