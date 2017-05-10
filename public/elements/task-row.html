@@ -1,5 +1,7 @@
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="project-picker.html">
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="task-manager.html">
@@ -30,14 +32,19 @@
     <style include="iron-flex-factors"></style> 
 
     <task-manager id="taskMgr"></task-manager>
-
+    <firebase-auth user="{{user}}"></firebase-auth> 
+    <firebase-document
+      path="/users/[[user.uid]]/projects/[[task.projectId]]/name"
+      data="{{projectName}}">
+    </firebase-document>
+ 
     <div id="row" class="layout horizontal">
       <div class="item complete" on-tap="complete">X</div>
       <div class="item name flex-6">
         <a href="/task/[[task.$key]]">[[task.name]]</a>
       </div>
       <div class="item flex-2">
-        <div on-tap="dropdown">[[task.projectId]]</div>
+        <div on-tap="dropdown">[[projectName]]</div>
         <project-picker id="picker"></project-picker>
       </div>
       <div class="item date flex-auto">Mar 13, 2017</div>
