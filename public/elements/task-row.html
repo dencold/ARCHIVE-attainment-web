@@ -47,7 +47,9 @@
         <div on-tap="dropdown">[[projectName]]</div>
         <project-picker id="picker"></project-picker>
       </div>
-      <div class="item date flex-auto">Mar 13, 2017</div>
+      <div class="item date flex-auto" on-tap="pickDate">
+        [[formattedDate]]
+      </div>
     </div>
     
   </template>
@@ -58,7 +60,12 @@
 
       static get properties() {
         return {
-          task: Object
+          task: Object,
+          dueDate: Number,
+          formattedDate: {
+            type: String,
+            computed: 'formatDate(task)'
+          }
         }
       }
 
@@ -81,6 +88,22 @@
         if (prj) {
           this.$.taskMgr.updateProject(this.task.$key, prj.$key);
         }
+      }
+
+      formatDate(task) {
+        var monthNames = [
+          "Jan", "Feb", "Mar",
+          "Apr", "May", "Jun", "Jul",
+          "Aug", "Sep", "Oct",
+          "Nov", "Dec"
+        ];
+
+        var due = new Date(task.createdAt);
+        var day = due.getDate();
+        var monthIndex = due.getMonth();
+        var year = due.getFullYear();
+
+        return day + ' ' + monthNames[monthIndex] + ' ' + year;
       }
 
     }
