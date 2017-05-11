@@ -24,7 +24,8 @@
     "paper-listbox": "PolymerElements/paper-listbox#2.0-preview",
     "paper-item": "PolymerElements/paper-item#2.0-preview",
     "web-animations-js": "^2.2.5",
-    "iron-a11y-keys-behavior": "PolymerElements/iron-a11y-keys-behavior#2.0-preview"
+    "iron-a11y-keys-behavior": "PolymerElements/iron-a11y-keys-behavior#2.0-preview",
+    "moment": "^2.18.1"
   },
   "resolutions": {
     "polymer": "^2.0.0-rc.1"
