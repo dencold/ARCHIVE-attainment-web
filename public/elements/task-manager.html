@@ -51,6 +51,13 @@
         taskRef.update({projectId: projectId})
           .catch(error => console.log("ERROR updating project: " + error.message));
       }
+
+      setDue(taskId, dueAt) {
+        var taskRef = this.$.taskDB.ref.child(taskId);
+
+        taskRef.update({dueAt: dueAt})
+          .catch(error => console.log("ERROR setting due date: " + error.message));
+      }
     }
 
     window.customElements.define(TaskManager.is, TaskManager);
