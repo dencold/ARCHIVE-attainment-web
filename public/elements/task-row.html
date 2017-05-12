@@ -6,6 +6,9 @@
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="task-manager.html">
 
+<!-- TODO: this needs to be broken into separate components...especially the
+     date related logic.
+-->
 <dom-module id="task-row">
   <template>
     <style include="shared-styles">
@@ -44,11 +47,17 @@
         <a href="/task/[[task.$key]]">[[task.name]]</a>
       </div>
       <div class="item flex-2">
-        <div on-tap="dropdown">[[projectName]]</div>
+        <div on-tap="openProjectPicker">[[projectName]]</div>
         <project-picker id="picker"></project-picker>
       </div>
-      <div class="item date flex-auto" on-tap="pickDate">
+      <div class="item date flex-auto" on-tap="editOn">
         [[formattedDue]]
+        <input id="dueInput"
+               type="text"
+               hidden="[[hideDateChange]]"
+               value="{{days::input}}"
+               on-focus="editOn"
+               on-blur="editOff">
       </div>
     </div>
     
@@ -61,9 +70,14 @@
       static get properties() {
         return {
           task: Object,
+          days: Number,
           formattedDue: {
             type: String,
             computed: 'formatDate(task.dueAt)'
+          },
+          hideDateChange: {
+            type: Boolean,
+            value: true
           }
         }
       }
@@ -78,7 +92,7 @@
         this.$.taskMgr.complete(this.task.$key);
       }
 
-      dropdown() {
+      openProjectPicker() {
         this.$.picker.toggle();
       }
 
@@ -90,23 +104,36 @@
       }
 
       formatDate(dueAt) {
-        var monthNames = [
-          "Jan", "Feb", "Mar",
-          "Apr", "May", "Jun", "Jul",
-          "Aug", "Sep", "Oct",
-          "Nov", "Dec"
-        ];
-
-        if (!dueAt) {
-          return "-";
+        if (dueAt) {
+          return moment.unix(dueAt).format("MMM DD, YYYY");
         }
 
-        var due = new Date(dueAt);
-        var day = due.getDate();
-        var monthIndex = due.getMonth();
-        var year = due.getFullYear();
+        return "";
+      }
 
-        return day + ' ' + monthNames[monthIndex] + ' ' + year;
+      changeDue(days) {
+        var newDue;
+
+        if (this.task.dueAt && days) {
+          newDue = moment.unix(this.task.dueAt).add(days, 'days').unix();
+        } else if (days) {
+          newDue = moment().add(days, 'days').unix();
+        }
+
+        if (newDue) {
+          this.$.taskMgr.setDue(this.task.$key, newDue);
+        }
+      }
+
+      editOn() {
+        this.hideDateChange = false;
+        this.$.dueInput.focus();
+      }
+
+      editOff() {
+        this.hideDateChange = true;
+        this.changeDue(this.days);
+        this.$.dueInput.value = "";
       }
 
     }
