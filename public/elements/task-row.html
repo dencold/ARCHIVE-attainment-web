@@ -105,7 +105,7 @@
 
       formatDate(dueAt) {
         if (dueAt) {
-          return moment.unix(dueAt).format("MMM DD, YYYY");
+          return moment(dueAt).format("MMM DD, YYYY");
         }
 
         return "";
@@ -115,9 +115,9 @@
         var newDue;
 
         if (this.task.dueAt && days) {
-          newDue = moment.unix(this.task.dueAt).add(days, 'days').unix();
+          newDue = moment(this.task.dueAt).add(days, 'days').valueOf();
         } else if (days) {
-          newDue = moment().add(days, 'days').unix();
+          newDue = moment().add(days, 'days').valueOf();
         }
 
         if (newDue) {
