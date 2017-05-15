@@ -23,39 +23,46 @@
 <dom-module id="my-app">
   <template>
     <style>
-      :host {
-        --app-primary-color: #4285f4;
-        --app-secondary-color: black;
-
-        display: block;
-      }
-
-      app-drawer-layout:not([narrow]) [drawer-toggle] {
-        display: none;
+      body {
+        margin: 0;
+        font-family: 'Roboto', 'Noto', sans-serif;
+        background-color: #eee;
       }
 
       app-header {
-        color: #fff;
-        background-color: var(--app-primary-color);
+        background-color: #445e6d;
+        color: white;
       }
 
       app-header paper-icon-button {
         --paper-icon-button-ink-color: white;
       }
 
-      .drawer-list {
-        margin: 0 20px;
+      app-drawer-layout {
+        --app-drawer-layout-content-transition: margin 0.2s;
       }
 
-      .drawer-list a {
+      app-drawer {
+        --app-drawer-content-container: {
+          background-color: #eee;
+        }
+      }
+
+      .drawer-content {
+        margin-top: 80px;
+        height: calc(100% - 80px);
+        overflow: auto;
+      }
+
+      .drawer-content a {
         display: block;
         padding: 0 16px;
         text-decoration: none;
-        color: var(--app-secondary-color);
+        color: black;
         line-height: 40px;
       }
 
-      .drawer-list a.iron-selected {
+      .drawer-content a.iron-selected {
         color: black;
         font-weight: bold;
       }
@@ -74,31 +81,34 @@
         route="{{route}}"
         pattern="/:page"
         data="{{routeData}}"
-        tail="{{tail}}"></app-route>
+        tail="{{tail}}">
+    </app-route>
 
     <template is="dom-if" if="[[user]]">
-    <app-drawer-layout fullbleed>
-      <!-- Drawer content -->
-      <app-drawer id="drawer" slot="drawer">
-        <app-toolbar>Menu</app-toolbar>
-        <iron-selector selected="[[routeData.page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="inbox" href="/project-detail/[[inboxProject.id]]">Inbox</a>
-          <a name="projects" href="/projects">Projects</a>
-          <a name="settings" href="/settings">Settings</a>
-          <a name="view1" href="/view1">View One</a>
-        </iron-selector>
-      </app-drawer>
+    <app-header-layout has-scrolling-region fullbleed>
 
-      <!-- Main content -->
-      <app-header-layout has-scrolling-region>
+      <app-header fixed effects="waterfall" slot="header">
+        <app-toolbar>
+          <paper-icon-button icon="my-icons:menu" on-tap="_toggleDrawer"></paper-icon-button>
+          <div main-title>Attainment</div>
+        </app-toolbar>
+      </app-header>
 
-        <app-header slot="header" condenses reveals effects="waterfall">
-          <app-toolbar>
-            <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
-            <div main-title>Attainment</div>
-          </app-toolbar>
-        </app-header>
+      <app-drawer-layout id="drawerLayout">
 
+        <!-- Drawer content -->
+        <app-drawer id="drawer" slot="drawer" opened="{{isDrawerOpen}}">
+          <div class="drawer-content">
+          <iron-selector selected="[[routeData.page]]" attr-for-selected="name" role="navigation">
+            <a name="inbox" href="/project-detail/[[inboxProject.id]]">Inbox</a>
+            <a name="projects" href="/projects">Projects</a>
+            <a name="settings" href="/settings">Settings</a>
+            <a name="view1" href="/view1">View One</a>
+          </iron-selector>
+          </div>
+        </app-drawer>
+
+        <!-- Main content -->
         <iron-pages
             selected="[[routeData.page]]"
             attr-for-selected="name"
@@ -111,8 +121,8 @@
           <page-view1 name="view1"></page-view1>
           <page-404 name="view404"></page-404>
         </iron-pages>
-      </app-header-layout>
-    </app-drawer-layout>
+      </app-drawer-layout>
+    </app-header-layout>
     </template>
 
     <template is="dom-if" if="[[!user]]">
