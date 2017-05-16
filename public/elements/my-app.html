@@ -84,7 +84,6 @@
         tail="{{tail}}">
     </app-route>
 
-    <template is="dom-if" if="[[user]]">
     <app-header-layout has-scrolling-region fullbleed>
 
       <app-header fixed effects="waterfall" slot="header">
@@ -123,7 +122,6 @@
         </iron-pages>
       </app-drawer-layout>
     </app-header-layout>
-    </template>
 
     <template is="dom-if" if="[[!user]]">
       <div style="margin: 0 auto; width: 500px">  
@@ -175,7 +173,11 @@
         this.email = "";
         this.password = "";
       }
-
+      
+      _toggleDrawer() {
+        this.$.drawer.toggle();
+      }
+   
     }
 
     window.customElements.define(MyApp.is, MyApp);
