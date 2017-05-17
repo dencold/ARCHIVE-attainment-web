@@ -99,10 +99,10 @@
         <app-drawer id="drawer" slot="drawer" opened="{{isDrawerOpen}}">
           <div class="drawer-content">
           <iron-selector selected="[[routeData.page]]" attr-for-selected="name" role="navigation">
-            <a name="inbox" href="/project-detail/[[inboxProject.id]]">Inbox</a>
-            <a name="projects" href="/projects">Projects</a>
-            <a name="settings" href="/settings">Settings</a>
-            <a name="view1" href="/view1">View One</a>
+            <a name="inbox" href="/project-detail/[[inboxProject.id]]" drawer-toggle>Inbox</a>
+            <a name="projects" href="/projects" drawer-toggle>Projects</a>
+            <a name="settings" href="/settings" drawer-toggle>Settings</a>
+            <a name="view1" href="/view1" drawer-toggle>View One</a>
           </iron-selector>
           </div>
         </app-drawer>
