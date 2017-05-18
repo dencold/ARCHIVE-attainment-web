@@ -1,0 +1,59 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
+
+<dom-module id="app-no-auth">
+  <template>
+    <style>
+      body {
+        margin: 0;
+        font-family: 'Roboto', 'Noto', sans-serif;
+        background-color: #eee;
+      }
+
+    </style>
+
+    <firebase-auth id="auth" user="{{user}}"></firebase-auth>
+    
+    <div style="margin: 0 auto; width: 500px">  
+      <img src="/images/attain-logo.jpg" height="500px" width="500px" />
+    </div>
+    <div style="margin: 0 auto; width: 500px">
+      <paper-input value="{{email}}" type="email" label="Email Address"></paper-input>
+      <paper-input value="{{password}}" type="password" label="Password"></paper-input>
+    </div>
+    <div style="margin: 0 auto; width: 75px">
+      <paper-button on-tap="login">Log in</paper-button>
+    </div>
+
+  </template>
+
+  <script>
+    class AppNoAuth extends Polymer.Element {
+      static get is() { return 'app-no-auth'; }
+
+      static get properties() {
+        return {
+          user: Object,
+          email: String,
+          password: String
+        }
+      }
+
+      login() {
+        this.$.auth.signInWithEmailAndPassword(
+          this.email,
+          this.password
+        ).then( () => this.resetLogin()
+        ).catch(error => console.log("ERROR: " + error.message));
+      }
+      
+      resetLogin() {
+        this.email = "";
+        this.password = "";
+      }
+
+    }
+
+    window.customElements.define(AppNoAuth.is, AppNoAuth);
+  </script>
+</dom-module>

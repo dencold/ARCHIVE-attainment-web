@@ -1,0 +1,91 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="app-authed.html">
+<link rel="import" href="app-no-auth.html">
+
+<dom-module id="app-shell">
+  <template>
+
+    <!-- set our firebase config. note that the "api-key" is meant to be 
+         visibile to the public and is not a secret that needs to be 
+         protected.
+    -->
+    <firebase-app
+      id="firebase"
+      auth-domain="attainment-6017d.firebaseapp.com"
+      database-url="https://attainment-6017d.firebaseio.com"
+      api-key="AIzaSyDs8E_p1Uyiq9mLcBC6G__Kdzu3ggkgt9I">
+    </firebase-app>
+    <firebase-auth id="auth" user="{{user}}"></firebase-auth>
+
+    <template is="dom-if" if="[[loading]]">
+      <h1>Loading!!!!</h1>
+    </template>
+    
+    <template is="dom-if" if="[[authed]]">
+      <app-authed></app-authed>
+    </template>
+
+    <template is="dom-if" if="[[noAuth]]">
+      <app-no-auth></app-no-auth>
+    </template>
+
+
+  </template>
+
+  <script>
+    class AppShell extends Polymer.Element {
+      static get is() { return 'app-shell'; }
+
+      static get properties() {
+        return {
+          // we default to the loading state
+          loading: {
+            type: Boolean,
+            value: true
+          },
+          authed: Boolean,
+          noAuth: Boolean,
+          user: Object 
+        }
+      }
+
+      ready() {
+        super.ready();
+
+        // we need to set listeners for both user AND status change events 
+        // in order to properly disambiguate when a user is logged out and 
+        // or when we are just waiting to load the auth. In both cases, 
+        // the user value will be null. We use the 'statusKnown' attribute
+        // to know which case we are in.
+        this.$.auth.addEventListener('user-changed',
+          e => this._handleAuthChange(e));
+        this.$.auth.addEventListener('status-known-changed',
+          e => this._handleAuthChange(e));
+      }
+
+      _handleAuthChange(e) {
+        var statusKnown = this.$.auth.statusKnown;
+
+        // first, check that we are not just in a load state
+        if (this.user) {
+          this.authed = true;
+          this.loading = false;
+          this.noAuth = false;
+        } else if (statusKnown) {
+          this.noAuth = true;
+          this.authed = false;
+          this.loading = false;
+        } else {
+          this.loading = true;
+          this.authed = false;
+          this.noAuth = false;
+        }
+      }
+
+    }
+
+    window.customElements.define(AppShell.is, AppShell);
+  </script>
+</dom-module>
