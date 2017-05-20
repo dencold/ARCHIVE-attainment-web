@@ -1,10 +1,10 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="markdown-editor.html">
 <link rel="import" href="task-row.html">
 <link rel="import" href="shared-styles.html">
 
@@ -13,9 +13,9 @@
     <style include="shared-styles">
       :host {
         display: block;
-
-        padding: 10px;
+        padding: 20px;
       }
+
     </style>
   
     <app-route
@@ -39,8 +39,7 @@
     </firebase-query>
 
     <h1>[[project.name]]</h1>
-    <paper-textarea label="Notes" value={{project.notes}}></paper-textarea>
-    
+    <markdown-editor text="{{project.notes}}"></markdown-editor>
     <paper-input id="input" label="Add task"></paper-input>
     <paper-button id="add" on-tap="add">Add</paper-button>
 
@@ -74,6 +73,7 @@
           projectId: this.routeData.id
         });
       }
+
     }
 
     window.customElements.define(PageProjectDetail.is, PageProjectDetail);

@@ -25,7 +25,8 @@
     "paper-item": "PolymerElements/paper-item#^2.0.0",
     "web-animations-js": "^2.2.5",
     "iron-a11y-keys-behavior": "PolymerElements/iron-a11y-keys-behavior#^2.0.0",
-    "moment": "^2.18.1"
+    "moment": "^2.18.1",
+    "marked-element": "PolymerElements/marked-element#^2.0.0"
   },
   "resolutions": {
     "polymer": "^2.0.0"
