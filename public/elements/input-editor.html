@@ -1,0 +1,53 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<dom-module id="input-editor">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+  
+    <div id="view" hidden$="[[editing]]" on-tap="editOn">
+      [[text]]
+    </div>
+    
+    <input id="input"
+           type="text"
+           hidden$="[[!editing]]"
+           value="{{text::input}}"
+           on-focus="editOn"
+           on-blur="editOff" >
+    
+  </template>
+
+  <script>
+    class InputEditor extends Polymer.Element {
+      static get is() { return 'input-editor'; }
+
+      static get properties() {
+        return {
+          text: {
+            type: String,
+            notify: true
+          },
+          editing: {
+            type: Boolean,
+            value: false
+          }
+        }
+      }
+
+      editOn() {
+        this.editing = true;
+        this.$.input.focus();
+      }
+
+      editOff() {
+        this.editing = false;
+      }
+    }
+
+    window.customElements.define(InputEditor.is, InputEditor);
+  </script>
+</dom-module>
