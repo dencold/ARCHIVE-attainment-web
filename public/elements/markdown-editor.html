@@ -9,6 +9,11 @@
         display: block;
       }
 
+      #markdown {
+        min-height: 30px;
+        background-color: #f5f5f5;
+      }
+
       marked-element[hidden] {
         display: none;
       }
@@ -62,6 +67,7 @@
       editOff() {
         this.editing = false;
       }
+
     }
 
     window.customElements.define(MarkdownEditor.is, MarkdownEditor);

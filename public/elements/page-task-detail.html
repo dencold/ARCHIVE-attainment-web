@@ -2,13 +2,13 @@
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-input/paper-textarea.html">
-<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html">
-<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="shared-styles.html">
+<link rel="import" href="input-editor.html">
+<link rel="import" href="markdown-editor.html">
+<link rel="import" href="task-manager.html">
 
 <dom-module id="page-task-detail">
   <template>
@@ -27,11 +27,6 @@
     </app-route>
 
     <firebase-auth user="{{user}}"></firebase-auth>
-    <firebase-query
-      id="projectQuery"
-      path="/users/[[user.uid]]/projects"
-      data="{{projects}}">
-    </firebase-query>
     <firebase-document
       id="tasksQuery"
       path="/users/[[user.uid]]/tasks/[[routeData.id]]"
@@ -46,22 +41,16 @@
       id="archiveQuery"
       path="/users/[[user.uid]]/archived/tasks/[[routeData.id]]">
     </firebase-document>
+    <task-manager id="taskMgr"></task-manager>
 
-    <paper-input value="{{task.name}}" label="Name"></paper-input>
-    <p>Current Project: [[currProject.name]]</p>
-    <paper-dropdown-menu label="Change Project">
-      <paper-listbox slot="dropdown-content" attr-for-selected="val" selected="{{newProject}}">
-          <template is="dom-repeat" items="[[projects]]" as="project">
-            <paper-item val$="[[project.$key]]">[[project.name]]</paper-item>
-          </template>
-      </paper-listbox>
-    </paper-dropdown-menu>
-
-    <paper-textarea label="Notes" value={{task.notes}}></paper-textarea>
+    <input-editor text="{{task.name}}"></input-editor>
+    <div on-tap="openProjectPicker">Project: [[currProject.name]]</div>
+    <project-picker id="picker"></project-picker>
+    <markdown-editor text="{{task.notes}}"></markdown-editor>
 
     <p hidden$="[[!task.gmailThreadId]]">Gmail: [[task.gmailThreadId]]</p>
 
-    <paper-button id="done" on-tap="done">Done!</paper-button>
+    <paper-button id="done" on-tap="done">Complete</paper-button>
 
   </template>
 
@@ -78,12 +67,14 @@
           task: {
             type: Object,
             notify: true
-          },
-          newProject: {
-            type: String,
-            observer: '_changeProject'
           }
         }
+      }
+
+      ready() {
+        super.ready();
+        this.$.picker.addEventListener('project-selected',
+          e => this._handleProjectChange(e));
       }
 
       done() {
@@ -99,15 +90,21 @@
       _removeTask() {
         // we'll want to switch back to project view after we delete
         var projectId = this.task.projectId;
-        this.$.tasksQuery.ref.remove();
+        this.$.taskMgr.complete(this.routeData.id);
 
         this.set('router.path', '/project-detail/' + projectId);
       }
 
-      _changeProject(newVal, oldVal) {
-        this.$.tasksQuery.ref.child('projectId').set(newVal);
+      openProjectPicker() {
+        this.$.picker.toggle();
       }
-      
+
+      _handleProjectChange(e) {
+        var prj = JSON.parse(e.detail.project);
+        if (prj) {
+          this.$.taskMgr.updateProject(this.routeData.id, prj.$key);
+        }
+      }
     }
 
     window.customElements.define(PageTaskDetail.is, PageTaskDetail);
