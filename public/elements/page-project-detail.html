@@ -43,13 +43,13 @@
 
     <input-editor class="title" text="{{project.name}}"></input-editor>
     <markdown-editor text="{{project.notes}}"></markdown-editor>
-    <div class="layout horizontal">
+    <div class="row layout horizontal">
       <input id="input" class="large flex" type="text">
       <paper-button id="add" class="primary" on-tap="add">Add Task</paper-button>
     </div>
 
     <template is="dom-repeat" items="[[tasks]]" as="task">
-      <task-row task="[[task]]"></task-row>
+      <task-row class="row" task="[[task]]"></task-row>
     </template>
 
   </template>
