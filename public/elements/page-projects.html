@@ -1,6 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="shared-styles.html">
@@ -11,9 +10,11 @@
       :host {
         display: block;
 
-        padding: 10px;
+        padding: 20px;
       }
     </style>
+    <style include="iron-flex"></style>
+    <style include="iron-flex-factors"></style>
 
     <firebase-auth user="{{user}}"></firebase-auth>
     <firebase-query
@@ -22,10 +23,12 @@
       data="{{projects}}">
     </firebase-query>
 
-    <h1>Projects</h1>
+    <div class="title">Projects</div>
 
-    <paper-input id="input" label="Add project"></paper-input>
-    <paper-button id="add" on-tap="add">Add</paper-button>
+    <div class="layout horizontal">
+      <input id="input" class="large flex" type="text">
+      <paper-button id="add" class="primary" on-tap="add">Add Project</paper-button>
+    </div>
 
     <div id="card">
       <div id="projects">
@@ -58,6 +61,8 @@
           name: this.$.input.value,
           createdAt: Date.now()
         });
+
+        this.$.input.value = "";
       }
     }
 

@@ -23,6 +23,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
       }
 
+      .title {
+        font-size: 26px;
+        font-weight: bold;
+      }
+
       .circle {
         display: inline-block;
         width: 64px;
@@ -39,6 +44,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         margin: 16px 0;
         color: #212121;
         font-size: 22px;
+      }
+
+      paper-button.primary {
+        background-color: #445e6d;
+        color: white;
+      }
+
+      input[type="text"].large {
+        display: block;
+        margin: 0;
+        font-family: sans-serif;
+        font-size: 18px;
+        box-shadow: none;
+        padding: 10px;
+        border: solid 3px #c9c9c9;
+        transition: border 0.3s;
+      }
+
+      input[type="text"].large:focus {
+        outline: none;
+        border: solid 5px #969696;
       }
     </style>
   </template>

@@ -1,3 +1,4 @@
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
@@ -16,9 +17,10 @@
         display: block;
         padding: 20px;
       }
-
     </style>
-  
+    <style include="iron-flex"></style>
+    <style include="iron-flex-factors"></style>
+
     <app-route
         route="{{route}}"
         pattern="/:id"
@@ -39,10 +41,12 @@
       data="{{tasks}}">
     </firebase-query>
 
-    <input-editor text="{{project.name}}"></input-editor>
+    <input-editor class="title" text="{{project.name}}"></input-editor>
     <markdown-editor text="{{project.notes}}"></markdown-editor>
-    <paper-input id="input" label="Add task"></paper-input>
-    <paper-button id="add" on-tap="add">Add</paper-button>
+    <div class="layout horizontal">
+      <input id="input" class="large flex" type="text">
+      <paper-button id="add" class="primary" on-tap="add">Add Task</paper-button>
+    </div>
 
     <template is="dom-repeat" items="[[tasks]]" as="task">
       <task-row task="[[task]]"></task-row>
@@ -58,12 +62,8 @@
         return {
           route: Object,
           routeData: Object,
-          project: {
-            type: Object
-          },
-          tasks: {
-            type: Object
-          }
+          project: Object,
+          tasks: Object
         }
       }
 

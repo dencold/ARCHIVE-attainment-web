@@ -43,14 +43,14 @@
     </firebase-document>
     <task-manager id="taskMgr"></task-manager>
 
-    <input-editor text="{{task.name}}"></input-editor>
+    <input-editor class="title" text="{{task.name}}"></input-editor>
     <div on-tap="openProjectPicker">Project: [[currProject.name]]</div>
     <project-picker id="picker"></project-picker>
     <markdown-editor text="{{task.notes}}"></markdown-editor>
 
     <p hidden$="[[!task.gmailThreadId]]">Gmail: [[task.gmailThreadId]]</p>
 
-    <paper-button id="done" on-tap="done">Complete</paper-button>
+    <paper-button id="done" class="primary" on-tap="done">Complete</paper-button>
 
   </template>
 
