@@ -1,5 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="shared-styles.html">
 
@@ -15,18 +16,17 @@
 
     <firebase-auth 
       id="auth"
-      user="{{user}}"
-      provider="google">
+      user="{{user}}">
     </firebase-auth>
 
-    <template is="dom-if" if="[[user]]">
-      <h1>You are logged in!</h1>
-      <paper-button on-tap="logout">Log out</paper-button>
-    </template>
-    <template is="dom-if" if="[[!user]]">
-      <h1>Please login</h1>
-      <paper-button on-tap="login">Log in</paper-button>
-    </template>
+    <h1>User: [[user.uid]]</h1>
+    <h1>Create account</h1>
+    <div><paper-input id="email" type="email" label="Email Address"></paper-input></div>
+    <div><paper-input id="password" type="password" label="Password"></paper-input></div>
+    <div><paper-button on-tap="login">Log in</paper-button></div>
+
+    <h1>Or logout</h1>
+    <div><paper-button on-tap="logout">Log out</paper-button></div>
 
   </template>
 
@@ -35,7 +35,20 @@
       static get is() { return 'page-settings'; }
 
       login() {
-              return this.$.auth.signInWithPopup();
+        this.$.auth.createUserWithEmailAndPassword(
+          this.$.email.value,
+          this.$.password.value
+        ).catch(function(error) {
+          // Handle Errors here.
+          var errorCode = error.code;
+          var errorMessage = error.message;
+
+          console.log("ERROR! " + errorMessage);
+        });
+      }
+
+      logout() {
+        this.$.auth.signOut();
       }
     }
 

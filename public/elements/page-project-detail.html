@@ -44,7 +44,11 @@
     <input-editor class="title" text="{{project.name}}"></input-editor>
     <markdown-editor text="{{project.notes}}"></markdown-editor>
     <div class="row layout horizontal">
-      <input id="input" class="large flex" type="text">
+      <input id="input"
+             class="large flex"
+             type="text"
+             autocorrect="off"
+             autocapitalize="none">
       <paper-button id="add" class="primary" on-tap="add">Add Task</paper-button>
     </div>
 
@@ -73,6 +77,8 @@
           createdAt: Date.now(),
           projectId: this.routeData.id
         });
+
+        this.$.input.value = "";
       }
 
     }

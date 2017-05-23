@@ -47,7 +47,7 @@
   </template>
 
   <script>
-    class MarkdownEditor extends Polymer.Element {
+    class MarkdownEditor extends Polymer.GestureEventListeners(Polymer.Element) {
       static get is() { return 'markdown-editor'; }
 
       static get properties() {

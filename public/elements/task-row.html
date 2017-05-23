@@ -60,7 +60,7 @@
   </template>
 
   <script>
-    class TaskRow extends Polymer.Element {
+    class TaskRow extends Polymer.GestureEventListeners(Polymer.Element) {
       static get is() { return 'task-row'; }
 
       static get properties() {

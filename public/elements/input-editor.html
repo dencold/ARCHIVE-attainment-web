@@ -16,13 +16,15 @@
            type="text"
            hidden$="[[!editing]]"
            value="{{text::input}}"
+           autocorrect="off"
+           autocapitalize="none"
            on-focus="editOn"
            on-blur="editOff" >
     
   </template>
 
   <script>
-    class InputEditor extends Polymer.Element {
+    class InputEditor extends Polymer.GestureEventListeners(Polymer.Element) {
       static get is() { return 'input-editor'; }
 
       static get properties() {
