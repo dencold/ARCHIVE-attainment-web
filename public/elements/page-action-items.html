@@ -1,0 +1,125 @@
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="input-editor.html">
+<link rel="import" href="markdown-editor.html">
+<link rel="import" href="task-row.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="page-action-items">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        padding: 20px;
+      }
+    </style>
+    <style include="iron-flex"></style>
+    <style include="iron-flex-factors"></style>
+
+    <app-route
+        route="{{route}}"
+        pattern="/:id"
+        data="{{routeData}}">
+    </app-route>
+
+    <firebase-auth user="{{user}}"></firebase-auth>
+    <firebase-query
+      id="overdueQuery"
+      path="/users/[[user.uid]]/tasks"
+      order-by-child="dueAt"
+      start-at="[[epoch]]"
+      end-at="[[eod]]"
+      data="{{overdueTasks}}">
+    </firebase-query>
+    <firebase-query
+      id="tmrQuery"
+      path="/users/[[user.uid]]/tasks"
+      order-by-child="dueAt"
+      start-at="[[tmrBeg]]"
+      end-at="[[tmrEod]]"
+      data="{{tmrTasks}}">
+    </firebase-query>
+
+    <h1>Action Items</h1>
+
+    <h2>Due Today / Overdue</h2>
+    <template is="dom-repeat" items="[[overdueTasks]]" as="task">
+      <task-row class="row" task="[[task]]"></task-row>
+    </template>
+
+    <h2>Due Tomorrow</h2>
+    <template is="dom-repeat" items="[[tmrTasks]]" as="task">
+      <task-row class="row" task="[[task]]"></task-row>
+    </template>
+  </template>
+
+  <script>
+    class PageActionItems extends Polymer.Element {
+      static get is() { return 'page-action-items'; }
+
+      static get properties() {
+        return {
+          route: Object,
+          routeData: Object,
+          project: Object,
+          tasks: Object,
+          // we have to set a starting point because, annoyingly, firebase
+          // includes null/empty values in its "order-by-child" parameter. wat?
+          epoch: {
+            type: Number,
+            value: 1000000000000
+          },
+          eod: {
+            type: Number,
+            computed: 'calcEod()'
+          },
+          tmrBeg: {
+            type: Number,
+            computed: 'calcTmrBeg()'
+          },
+          tmrEod: {
+            type: Number,
+            computed: 'calcTmrEod()'
+          }
+        }
+      }
+
+      add() {
+        this.$.tasksQuery.ref.push({
+          name: this.$.input.value,
+          createdAt: Date.now(),
+          projectId: this.routeData.id
+        });
+
+        this.$.input.value = "";
+      }
+
+      calcEod() {
+        var eod = moment().hour(23).minute(59).second(59).millisecond(999);
+        console.log(eod.format());
+        console.log(eod.valueOf());
+        return eod.valueOf();
+      }
+      
+      calcTmrBeg() {
+        var ret = moment().add(1, 'd');
+        ret.hour(0).minute(0).second(0).millisecond(0);
+        console.log("tmrBeg: " + ret.format());
+        return ret.valueOf();
+      }
+
+      calcTmrEod() {
+        var ret = moment().add(1, 'd');
+        ret.hour(23).minute(59).second(59).millisecond(999);
+        console.log("tmrEod: " + ret.format());
+        return ret.valueOf();
+      }
+    }
+
+    window.customElements.define(PageActionItems.is, PageActionItems);
+  </script>
+</dom-module>

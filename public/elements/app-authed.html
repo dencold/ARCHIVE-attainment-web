@@ -15,6 +15,7 @@
 <link rel="import" href="my-icons.html">
 <link rel="import" href="page-project-detail.html">
 <link rel="import" href="page-task-detail.html">
+<link rel="import" href="page-action-items.html">
 <link rel="import" href="page-projects.html">
 <link rel="import" href="page-settings.html">
 <link rel="import" href="page-view1.html">
@@ -99,6 +100,7 @@
           <div class="drawer-content">
           <iron-selector selected="[[routeData.page]]" attr-for-selected="name" role="navigation">
             <a name="inbox" href="/project-detail/[[inboxProject.id]]" drawer-toggle>Inbox</a>
+            <a name="action" href="/action" drawer-toggle>Action</a>
             <a name="projects" href="/projects" drawer-toggle>Projects</a>
             <a name="settings" href="/settings" drawer-toggle>Settings</a>
             <a name="view1" href="/view1" drawer-toggle>View One</a>
@@ -114,6 +116,7 @@
             role="main">
           <page-project-detail name="project-detail" router="{{route}}" route="[[tail]]"></page-project-detail>
           <page-task-detail name="task" router="{{route}}" route="[[tail]]"></page-task-detail>
+          <page-action-items name="action"></page-action-items>
           <page-projects name="projects"></page-projects>
           <page-settings name="settings"></page-settings>
           <page-view1 name="view1"></page-view1>
