@@ -31,7 +31,6 @@
       complete(taskId) {
         var taskRef = this.$.taskDB.ref.child(taskId);
         var archiveRef = this.$.archiveDB.ref.child(taskId);
-        var wasStarred = false;
 
         // we need to do three things:
         // 1. get the task in firebase & set its completedAt property
@@ -41,16 +40,9 @@
           .then( snap => {
             var task = snap.val();
             task.completedAt = Date.now();
-            
-            if (task.isStarred) {
-              wasStarred = true;
-            }
-
             archiveRef.set(task); })
           .then(() => taskRef.remove())
           .catch(error => console.log("ERROR archiving task: " + error.message));
-
-        console.log("wasStarred? " + wasStarred);
       }
       
       updateProject(taskId, projectId) {
@@ -63,30 +55,8 @@
       setDue(taskId, dueAt) {
         var taskRef = this.$.taskDB.ref.child(taskId);
 
-        taskRef.update({dueAt: dueAt, isActionable: true})
+        taskRef.update({dueAt: dueAt})
           .catch(error => console.log("ERROR setting due date: " + error.message));
-      }
-
-      star(taskId) {
-        var taskRef = this.$.taskDB.ref.child(taskId);
-
-        taskRef.update({isStarred: true, isActionable: true})
-          .catch(error => console.log("ERROR starring: " + error.message));
-      }
-      
-      unstar(taskId) {
-        var taskRef = this.$.taskDB.ref.child(taskId);
-
-        // unstar, but only unaction if task does not have a due date
-        taskRef.once('value')
-          .then( snap => {
-            var task = snap.val();
-            if (task.dueAt) {
-              taskRef.update({isStarred: false});
-            } else {
-              taskRef.update({isStarred: false, isActionable: false});
-            } })
-          .catch(error => console.log("ERROR unstarring: " + error.message));
       }
     }
 
