@@ -39,6 +39,7 @@
  
     <div id="row" class="layout horizontal">
       <div class="item complete" on-tap="complete">X</div>
+      <div class="item complete" on-tap="toggleStar">[[task.isStarred]]</div>
       <div class="item name flex-6">
         <a href="/task/[[task.$key]]">[[task.name]]</a>
       </div>
@@ -118,6 +119,14 @@
 
         if (newDue) {
           this.$.taskMgr.setDue(this.task.$key, newDue);
+        }
+      }
+
+      toggleStar() {
+        if (this.task.isStarred) {
+          this.$.taskMgr.unstar(this.task.$key);
+        } else {
+          this.$.taskMgr.star(this.task.$key);
         }
       }
 
