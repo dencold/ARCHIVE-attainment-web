@@ -4,6 +4,7 @@
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="project-picker.html">
 <link rel="import" href="shared-styles.html">
+<link rel="import" href="star-manager.html">
 <link rel="import" href="task-manager.html">
 
 <!-- TODO: this needs to be broken into separate components...especially the
@@ -31,6 +32,7 @@
     <style include="iron-flex-factors"></style> 
 
     <task-manager id="taskMgr"></task-manager>
+    <star-manager id="starMgr"></star-manager>
     <firebase-auth user="{{user}}"></firebase-auth> 
     <firebase-document
       path="/users/[[user.uid]]/projects/[[task.projectId]]/name"
@@ -124,9 +126,9 @@
 
       toggleStar() {
         if (this.task.isStarred) {
-          this.$.taskMgr.unstar(this.task.$key);
+          this.$.starMgr.remove(this.task.$key, this.task.projectId);
         } else {
-          this.$.taskMgr.star(this.task.$key);
+          this.$.starMgr.add(this.task.$key, this.task.projectId);
         }
       }
 

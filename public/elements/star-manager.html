@@ -1,0 +1,66 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+
+<dom-module id="star-manager">
+  <template>
+  
+    <firebase-auth user="{{user}}"></firebase-auth> 
+    <firebase-query
+      id="taskDB"
+      path="/users/[[user.uid]]/tasks">
+    </firebase-query>
+    <firebase-query
+      id="projDB"
+      path="/users/[[user.uid]]/projects">
+    </firebase-query>
+
+  </template>
+
+  <script>
+    class StarManager extends Polymer.Element {
+      static get is() { return 'star-manager'; }
+
+      static get properties() {
+        return {
+          user: Object
+        }
+      }
+
+      add(taskId, projectId) {
+        var starredPrjRef = this.$.projDB.ref.child(projectId).child('starredTask');
+        var taskRef = this.$.taskDB.ref.child(taskId);
+
+        // when a task is starred, we need to:
+        // 1. remove the current star for the starred task in the project
+        // 2. update task with 'isStarred = true'
+        // 3. set the task as the current star on the project
+        starredPrjRef.once('value')
+          .then( snap => {
+            var currStar = snap.val();
+            if (currStar) {
+              return this.remove(currStar, projectId);
+            } 
+          })
+          .then( () => taskRef.update({isStarred: true}) )
+          .then( () => starredPrjRef.set(taskId) )
+          .catch(error => console.log("ERROR adding star: " + error.message));
+      }
+
+      remove(taskId, projectId) {
+        var starredPrjRef = this.$.projDB.ref.child(projectId).child('starredTask');
+        var taskRef = this.$.taskDB.ref.child(taskId);
+
+        // when a task's star is removed, we need to:
+        // 1. remove the current star on the project
+        // 2. update task with 'isStarred = false'
+        starredPrjRef.remove()
+          .then( () => taskRef.update({isStarred: false}) )
+          .catch(error => console.log("ERROR removing star: " + error.message));
+      }
+
+    }
+
+    window.customElements.define(StarManager.is, StarManager);
+  </script>
+</dom-module>
