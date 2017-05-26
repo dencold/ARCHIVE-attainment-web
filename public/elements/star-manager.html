@@ -4,8 +4,8 @@
 
 <dom-module id="star-manager">
   <template>
-  
-    <firebase-auth user="{{user}}"></firebase-auth> 
+
+    <firebase-auth user="{{user}}"></firebase-auth>
     <firebase-query
       id="taskDB"
       path="/users/[[user.uid]]/tasks">
@@ -40,7 +40,7 @@
             var currStar = snap.val();
             if (currStar) {
               return this.remove(currStar, projectId);
-            } 
+            }
           })
           .then( () => taskRef.update({isStarred: true}) )
           .then( () => starredPrjRef.set(taskId) )
