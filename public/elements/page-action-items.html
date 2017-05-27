@@ -43,11 +43,23 @@
       end-at="[[tmrEod]]"
       data="{{tmrTasks}}">
     </firebase-query>
+    <firebase-query
+      id="actionQuery"
+      path="/users/[[user.uid]]/tasks"
+      order-by-child="isStarred"
+      equal-to="true"
+      data="{{actionTasks}}">
+    </firebase-query>
 
     <h1>Action Items</h1>
 
     <h2>Due Today / Overdue</h2>
     <template is="dom-repeat" items="[[overdueTasks]]" as="task">
+      <task-row class="row" task="[[task]]"></task-row>
+    </template>
+
+    <h2>Next Actions</h2>
+    <template is="dom-repeat" items="[[actionTasks]]" as="task">
       <task-row class="row" task="[[task]]"></task-row>
     </template>
 
@@ -100,22 +112,18 @@
 
       calcEod() {
         var eod = moment().hour(23).minute(59).second(59).millisecond(999);
-        console.log(eod.format());
-        console.log(eod.valueOf());
         return eod.valueOf();
       }
       
       calcTmrBeg() {
         var ret = moment().add(1, 'd');
         ret.hour(0).minute(0).second(0).millisecond(0);
-        console.log("tmrBeg: " + ret.format());
         return ret.valueOf();
       }
 
       calcTmrEod() {
         var ret = moment().add(1, 'd');
         ret.hour(23).minute(59).second(59).millisecond(999);
-        console.log("tmrEod: " + ret.format());
         return ret.valueOf();
       }
     }
