@@ -2,6 +2,7 @@
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="star-manager.html">
 
 <dom-module id="task-manager">
   <template>
@@ -15,6 +16,7 @@
       id="archiveDB"
       path="/users/[[user.uid]]/archived/tasks">
     </firebase-query>
+    <star-manager id="starMgr"></star-manager>
 
   </template>
 
@@ -40,8 +42,18 @@
           .then( snap => {
             var task = snap.val();
             task.completedAt = Date.now();
-            archiveRef.set(task); })
-          .then(() => taskRef.remove())
+            archiveRef.set(task);
+            return task;
+          })
+          .then( task => {
+            taskRef.remove()
+            return task;
+          })
+          .then( task => {
+            if (task.isStarred) {
+              this.$.starMgr.assign(task.projectId);
+            }
+          })
           .catch(error => console.log("ERROR archiving task: " + error.message));
       }
       

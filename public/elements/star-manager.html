@@ -59,6 +59,28 @@
           .catch(error => console.log("ERROR removing star: " + error.message));
       }
 
+      assign(projectId) {
+        // wow...firebase can be extremely limiting. you can't filter twice :(
+        // https://stackoverflow.com/questions/26700924/query-based-on-multiple-where-clauses-in-firebase
+        // here comes yet another hack...
+        this.$.taskDB.ref.orderByChild('projectId').equalTo(projectId)
+          .once('value').then( snap => {
+            var oldestTask;
+            snap.forEach( childSnap => {
+              var task = childSnap.val();
+              if (!oldestTask || task.createdAt < oldestTask.createdAt) {
+                task.key = childSnap.key;
+                oldestTask = task;
+              }
+            })
+
+            return oldestTask;
+          })
+          .then( task => {
+            this.add(task.key, task.projectId);
+          });
+      }
+
     }
 
     window.customElements.define(StarManager.is, StarManager);
