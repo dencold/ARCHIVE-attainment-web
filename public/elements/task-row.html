@@ -1,7 +1,9 @@
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="my-icons.html">
 <link rel="import" href="project-picker.html">
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="star-manager.html">
@@ -13,6 +15,10 @@
 <dom-module id="task-row">
   <template>
     <style include="shared-styles">
+      a {
+        text-decoration: none;
+        color: black;
+      }
       .item {
         padding: 5px;
       }
@@ -24,7 +30,7 @@
         overflow: hidden;
         text-overflow: ellipsis;
       }
-      .complete {
+      .point {
         cursor: pointer;
       }
     </style>
@@ -40,16 +46,19 @@
     </firebase-document>
  
     <div id="row" class="layout horizontal">
-      <div class="item complete" on-tap="complete">X</div>
-      <div class="item complete" on-tap="toggleStar">[[task.isStarred]]</div>
+      <iron-icon class="item point" icon="[[starIcon]]" on-tap="toggleStar"></iron-icon>
       <div class="item name flex-6">
         <a href="/task/[[task.$key]]">[[task.name]]</a>
       </div>
       <div class="item flex-2">
-        <div on-tap="openProjectPicker">[[projectName]]</div>
+        <div on-tap="openProjectPicker">
+          <iron-icon icon="my-icons:folder-open"></iron-icon>
+          [[projectName]]
+        </div>
         <project-picker id="picker"></project-picker>
       </div>
       <div class="item date flex-auto" on-tap="editOn">
+        <iron-icon icon="my-icons:event"></iron-icon>
         [[formattedDue]]
         <input id="dueInput"
                type="text"
@@ -58,6 +67,7 @@
                on-focus="editOn"
                on-blur="editOff">
       </div>
+      <iron-icon class="item point" icon="my-icons:done" on-tap="complete"></iron-icon>
     </div>
     
   </template>
@@ -77,6 +87,10 @@
           hideDateChange: {
             type: Boolean,
             value: true
+          },
+          starIcon: {
+            type: String,
+            computed: 'determineIcon(task.isStarred)'
           }
         }
       }
@@ -130,6 +144,14 @@
         } else {
           this.$.starMgr.add(this.task.$key, this.task.projectId);
         }
+      }
+
+      determineIcon(isStarred) {
+        if (isStarred) {
+          return "my-icons:star";
+        }
+
+        return "my-icons:star-border";
       }
 
       editOn() {
