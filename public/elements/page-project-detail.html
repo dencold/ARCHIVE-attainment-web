@@ -31,14 +31,16 @@
     <firebase-document
       id="projectQuery"
       path="/users/[[user.uid]]/projects/[[routeData.id]]"
-      data="{{project}}">
+      data="{{project}}"
+      on-error="handleError">
     </firebase-document>
     <firebase-query
       id="tasksQuery"
       path="/users/[[user.uid]]/tasks"
       order-by-child="projectId"
       equal-to="[[routeData.id]]"
-      data="{{tasks}}">
+      data="{{tasks}}"
+      on-error="handleError">
     </firebase-query>
 
     <input-editor class="title" text="{{project.name}}"></input-editor>
@@ -79,6 +81,10 @@
         });
 
         this.$.input.value = "";
+      }
+
+      handleError(e) {
+        console.log("ERROR: " + e.message);
       }
 
     }

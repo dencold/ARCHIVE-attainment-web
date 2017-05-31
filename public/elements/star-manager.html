@@ -1,21 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
-<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
 
 <dom-module id="star-manager">
-  <template>
-
-    <firebase-auth user="{{user}}"></firebase-auth>
-    <firebase-query
-      id="taskDB"
-      path="/users/[[user.uid]]/tasks">
-    </firebase-query>
-    <firebase-query
-      id="projDB"
-      path="/users/[[user.uid]]/projects">
-    </firebase-query>
-
-  </template>
 
   <script>
     class StarManager extends Polymer.Element {
@@ -27,58 +12,85 @@
         }
       }
 
-      add(taskId, projectId) {
-        var starredPrjRef = this.$.projDB.ref.child(projectId).child('starredTask');
-        var taskRef = this.$.taskDB.ref.child(taskId);
+      add(taskId, projectId, userId) {
+        return new Promise(function(resolve, reject) {
+          // if we don't have a taskId this is a noop
+          if (!taskId) {
+            resolve();
+          }
 
-        // when a task is starred, we need to:
-        // 1. remove the current star for the starred task in the project
-        // 2. update task with 'isStarred = true'
-        // 3. set the task as the current star on the project
-        starredPrjRef.once('value')
-          .then( snap => {
-            var currStar = snap.val();
-            if (currStar) {
-              return this.remove(currStar, projectId);
-            }
-          })
-          .then( () => taskRef.update({isStarred: true}) )
-          .then( () => starredPrjRef.set(taskId) )
-          .catch(error => console.log("ERROR adding star: " + error.message));
+          var starredPrjRef = firebase.database().ref(
+            "users/" + userId + "/projects/" + projectId + "/starredTask"
+          );
+          var taskRef = firebase.database().ref(
+            "users/" + userId + "/tasks/" + taskId
+          );
+
+          // when a task is starred, we need to:
+          // 1. update task with 'isStarred = true'
+          // 2. set the task as the current star on the project
+          taskRef.update({isStarred: true})
+            .then( () => starredPrjRef.set(taskId) )
+            .then( () => resolve({taskId: taskId}) )
+            .catch(error => reject(error));
+        });
       }
 
-      remove(taskId, projectId) {
-        var starredPrjRef = this.$.projDB.ref.child(projectId).child('starredTask');
-        var taskRef = this.$.taskDB.ref.child(taskId);
+      remove(taskId, projectId, userId) {
+        return new Promise(function(resolve, reject) {
+          // if we don't have a taskId to remove, this is a noop
+          if (!taskId) {
+            resolve();
+          }
 
-        // when a task's star is removed, we need to:
-        // 1. remove the current star on the project
-        // 2. update task with 'isStarred = false'
-        starredPrjRef.remove()
-          .then( () => taskRef.update({isStarred: false}) )
-          .catch(error => console.log("ERROR removing star: " + error.message));
+          var starredPrjRef = firebase.database().ref(
+            "users/" + userId + "/projects/" + projectId + "/starredTask"
+          );
+          var taskRef = firebase.database().ref(
+            "users/" + userId + "/tasks/" + taskId
+          );
+
+          // when a task's star is removed, we need to:
+          // 1. remove the current star on the project
+          // 2. update task with 'isStarred = false'
+          starredPrjRef.remove()
+            .then( () => taskRef.update({isStarred: false}) )
+            .then( () => resolve({taskId: taskId}))
+            .catch(error => reject(error));
+        });
       }
 
-      assign(projectId) {
+      replace(currStarTaskId, newStarTaskId, projectId, userId) {
+        this.remove(currStarTaskId, projectId, userId)
+          .then( () => this.add(newStarTaskId, projectId, userId))
+          .catch(error => console.log("ERROR replacing star: " + error.message));
+      }
+
+      assign(projectId, userId) {
         // wow...firebase can be extremely limiting. you can't filter twice :(
         // https://stackoverflow.com/questions/26700924/query-based-on-multiple-where-clauses-in-firebase
         // here comes yet another hack...
-        this.$.taskDB.ref.orderByChild('projectId').equalTo(projectId)
-          .once('value').then( snap => {
-            var oldestTask;
-            snap.forEach( childSnap => {
-              var task = childSnap.val();
-              if (!oldestTask || task.createdAt < oldestTask.createdAt) {
-                task.key = childSnap.key;
-                oldestTask = task;
-              }
-            })
+        var taskRef = firebase.database().ref(
+          "users/" + userId + "/tasks/"
+        );
 
-            return oldestTask;
+        taskRef.orderByChild('projectId').equalTo(projectId)
+          .once('value').then( snap => {
+          var oldestTask;
+          snap.forEach( childSnap => {
+            var task = childSnap.val();
+            if (!oldestTask || task.createdAt < oldestTask.createdAt) {
+              task.key = childSnap.key;
+              oldestTask = task;
+            }
           })
-          .then( task => {
-            this.add(task.key, task.projectId);
-          });
+
+          return oldestTask;
+        })
+        .then( task => {
+          this.add(task.key, task.projectId, userId);
+        })
+        .catch(error => console.log("ERROR assigning star: " + error.message));
       }
 
     }

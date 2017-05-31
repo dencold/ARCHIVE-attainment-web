@@ -51,7 +51,7 @@
           })
           .then( task => {
             if (task.isStarred) {
-              this.$.starMgr.assign(task.projectId);
+              this.$.starMgr.assign(task.projectId, this.user.uid);
             }
           })
           .catch(error => console.log("ERROR archiving task: " + error.message));

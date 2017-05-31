@@ -41,8 +41,8 @@
     <star-manager id="starMgr"></star-manager>
     <firebase-auth user="{{user}}"></firebase-auth> 
     <firebase-document
-      path="/users/[[user.uid]]/projects/[[task.projectId]]/name"
-      data="{{projectName}}">
+      path="/users/[[user.uid]]/projects/[[task.projectId]]"
+      data="{{project}}">
     </firebase-document>
  
     <div id="row" class="layout horizontal">
@@ -53,7 +53,7 @@
       <div class="item flex-2">
         <div on-tap="openProjectPicker">
           <iron-icon icon="my-icons:folder-open"></iron-icon>
-          [[projectName]]
+          [[project.name]]
         </div>
         <project-picker id="picker"></project-picker>
       </div>
@@ -140,9 +140,18 @@
 
       toggleStar() {
         if (this.task.isStarred) {
-          this.$.starMgr.remove(this.task.$key, this.task.projectId);
+          this.$.starMgr.remove(
+            this.task.$key,
+            this.task.projectId,
+            this.user.uid
+          );
         } else {
-          this.$.starMgr.add(this.task.$key, this.task.projectId);
+          this.$.starMgr.replace(
+            this.project.starredTask,
+            this.task.$key,
+            this.task.projectId,
+            this.user.uid
+          );
         }
       }
 
