@@ -15,6 +15,10 @@
 <dom-module id="task-row">
   <template>
     <style include="shared-styles">
+      .highlight:hover {
+        background-color: #c2d4de;
+      }
+
       a {
         text-decoration: none;
         color: black;
@@ -45,19 +49,20 @@
       data="{{project}}">
     </firebase-document>
  
-    <div id="row" class="layout horizontal">
+    <div id="row" class="layout horizontal highlight">
       <iron-icon class="item point" icon="[[starIcon]]" on-tap="toggleStar"></iron-icon>
-      <div class="item name flex-6">
-        <a href="/task/[[task.$key]]">[[task.name]]</a>
-      </div>
-      <div class="item flex-2">
+
+      <a class="item name flex-6" href="/task/[[task.$key]]">
+        [[task.name]]
+      </a>
+      <div class="item point flex-2">
         <div on-tap="openProjectPicker">
           <iron-icon icon="my-icons:folder-open"></iron-icon>
           [[project.name]]
         </div>
         <project-picker id="picker"></project-picker>
       </div>
-      <div class="item date flex-auto" on-tap="editOn">
+      <div class="item date point flex-auto" on-tap="editOn">
         <iron-icon icon="my-icons:event"></iron-icon>
         [[formattedDue]]
         <input id="dueInput"

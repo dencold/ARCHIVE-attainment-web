@@ -6,6 +6,7 @@
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="input-editor.html">
+<link rel="import" href="input-submit.html">
 <link rel="import" href="markdown-editor.html">
 <link rel="import" href="task-row.html">
 <link rel="import" href="shared-styles.html">
@@ -45,14 +46,7 @@
 
     <input-editor class="title" text="{{project.name}}"></input-editor>
     <markdown-editor text="{{project.notes}}"></markdown-editor>
-    <div class="row layout horizontal">
-      <input id="input"
-             class="large flex"
-             type="text"
-             autocorrect="off"
-             autocapitalize="none">
-      <paper-button id="add" class="primary" on-tap="add">Add Task</paper-button>
-    </div>
+    <input-submit value="{{newTask}}" label="Add Task" on-submit="add"></input-submit>
 
     <template is="dom-repeat" items="[[tasks]]" as="task">
       <task-row class="row" task="[[task]]"></task-row>
@@ -75,12 +69,10 @@
 
       add() {
         this.$.tasksQuery.ref.push({
-          name: this.$.input.value,
+          name: this.newTask,
           createdAt: Date.now(),
           projectId: this.routeData.id
         });
-
-        this.$.input.value = "";
       }
 
       handleError(e) {

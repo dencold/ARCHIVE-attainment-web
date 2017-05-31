@@ -1,0 +1,77 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<dom-module id="input-submit">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      .row {
+        margin-bottom: 16px;
+      }
+      paper-button.primary {
+        background-color: #445e6d;
+        color: white;
+      }
+      input[type="text"].large {
+        display: block;
+        margin: 0;
+        font-family: sans-serif;
+        font-size: 18px;
+        box-shadow: none;
+        padding: 10px;
+        border: solid 3px #c9c9c9;
+        transition: border 0.3s;
+      }
+      input[type="text"].large:focus {
+        outline: none;
+        border: solid 5px #969696;
+      }
+    </style>
+    <style include="iron-flex"></style>
+    <style include="iron-flex-factors"></style>
+  
+    <div class="row layout horizontal">
+      <input id="input"
+             class="large flex"
+             type="text"
+             autocapitalize="none">
+      <paper-button id="submit" class="primary" on-tap="submit">[[label]]</paper-button>
+    </div>
+    
+  </template>
+
+  <script>
+    class InputSubmit extends Polymer.GestureEventListeners(Polymer.Element) {
+      static get is() { return 'input-submit'; }
+
+      static get properties() {
+        return {
+          value: {
+            type: String,
+            notify: true
+          },
+          label: {
+            type: String,
+            value: "Submit"
+          }
+        }
+      }
+
+      submit() {
+        // if user didn't have any input, this is a noop
+        if (!this.$.input.value) {
+          return;
+        }
+
+        this.value = this.$.input.value;
+        this.$.input.value = "";
+        this.dispatchEvent(new CustomEvent('submit', {detail: {value: this.value}}));
+      }
+
+    }
+
+    window.customElements.define(InputSubmit.is, InputSubmit);
+  </script>
+</dom-module>

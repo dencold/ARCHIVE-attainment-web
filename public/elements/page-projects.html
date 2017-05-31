@@ -2,6 +2,7 @@
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="input-submit.html">
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="page-projects">
@@ -25,10 +26,7 @@
 
     <div class="title">Projects</div>
 
-    <div class="row layout horizontal">
-      <input id="input" class="large flex" type="text">
-      <paper-button id="add" class="primary" on-tap="add">Add Project</paper-button>
-    </div>
+    <input-submit value="{{newProject}}" label="Add Project" on-submit="add"></input-submit>
 
     <div id="card">
       <div id="projects">
@@ -58,11 +56,9 @@
 
       add() {
         this.$.query.ref.push({
-          name: this.$.input.value,
+          name: this.newProject,
           createdAt: Date.now()
         });
-
-        this.$.input.value = "";
       }
     }
 
