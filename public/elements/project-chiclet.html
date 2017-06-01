@@ -1,0 +1,57 @@
+<link rel="import" href="../bower_components/marked-element/marked-element.html">
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html">
+
+<dom-module id="project-chiclet">
+  <template>
+    <style>
+      :host {
+        display: inline-block;
+      }
+      .tab {
+        width: 15em;
+        height: 1.5em;
+        box-shadow: 0 8px 6px -6px #777;
+        padding: 1em;
+        background:#FFF;
+      }
+      .content {
+        overflow: hidden;
+        width: 100%;
+        height: 1.3em;
+        text-overflow: ellipsis;
+        display: flex;
+        align-content:center;
+      }
+      a {
+        text-decoration: none;
+        color: black;
+      }
+    </style>
+
+    <a href="/project-detail/[[key]]">
+      <div class="tab">
+        <span class="content">
+          [[name]]
+        </span>
+      </div>
+    </a>
+
+  </template>
+
+  <script>
+    class ProjectChiclet extends Polymer.GestureEventListeners(Polymer.Element) {
+      static get is() { return 'project-chiclet'; }
+
+      static get properties() {
+        return {
+          name: String,
+          key: String
+        }
+      }
+
+    }
+
+    window.customElements.define(ProjectChiclet.is, ProjectChiclet);
+  </script>
+</dom-module>

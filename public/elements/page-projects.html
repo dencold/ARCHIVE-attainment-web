@@ -3,6 +3,7 @@
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="input-submit.html">
+<link rel="import" href="project-chiclet.html">
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="page-projects">
@@ -12,6 +13,9 @@
         display: block;
 
         padding: 20px;
+      }
+      project-chiclet {
+        margin: 0.5em;
       }
     </style>
     <style include="iron-flex"></style>
@@ -28,16 +32,11 @@
 
     <input-submit value="{{newProject}}" label="Add Project" on-submit="add"></input-submit>
 
-    <div id="card">
-      <div id="projects">
-        <ul id="projects-list">
-          <template is="dom-repeat" items="[[projects]]" as="project">
-            <a href="/project-detail/[[project.$key]]">
-              <li>[[project.name]]</li>
-            </a>
-          </template>
-        </ul>
-      </div>
+    <div class="layout horizontal wrap">
+    <template is="dom-repeat" items="[[projects]]" as="project">
+      <project-chiclet name="[[project.name]]" key="[[project.$key]]">
+      </project-chiclet>
+    </template>
     </div>
 
   </template>
