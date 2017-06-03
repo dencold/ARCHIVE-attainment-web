@@ -1,4 +1,5 @@
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-a11y-keys/iron-a11y-keys.html">
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
@@ -44,13 +45,28 @@
       on-error="handleError">
     </firebase-query>
 
+    <iron-a11y-keys
+      target="[[target]]"
+      keys="j"
+      on-keys-pressed="moveDown">
+    </iron-a11y-keys>
+
+    <iron-a11y-keys
+      target="[[target]]"
+      keys="k"
+      on-keys-pressed="moveUp">
+    </iron-a11y-keys>
+
     <input-editor class="title" text="{{project.name}}"></input-editor>
     <markdown-editor text="{{project.notes}}"></markdown-editor>
     <input-submit value="{{newTask}}" label="Add Task" on-submit="add"></input-submit>
 
+    <div id="rows">
     <template is="dom-repeat" items="[[tasks]]" as="task">
-      <task-row class="row" task="[[task]]"></task-row>
+      <task-row class="row" tabindex="0" task="[[task]]" on-tap="setFocus"></task-row>
     </template>
+    </div>
+
 
   </template>
 
@@ -63,8 +79,15 @@
           route: Object,
           routeData: Object,
           project: Object,
-          tasks: Object
+          tasks: Object,
+          target: Object,
+          currFocus: Object,
         }
+      }
+
+      ready() {
+        super.ready();
+        this.target = this.$.rows;
       }
 
       add() {
@@ -77,6 +100,43 @@
 
       handleError(e) {
         console.log("ERROR: " + e.message);
+      }
+
+      moveDown() {
+        if (this.currFocus) {
+          var nextEl = this.currFocus.nextElementSibling;
+          if (nextEl && nextEl.nodeName === "TASK-ROW") {
+            this.currFocus = nextEl;
+            this.currFocus.focus();
+          }
+        } else {
+          var firstEl = this.$.rows.firstElementChild;
+          if (firstEl) {
+            this.currFocus = firstEl;
+            this.currFocus.focus();
+          }
+        }
+      }
+
+      moveUp() {
+        if (this.currFocus) {
+          var prevEl = this.currFocus.previousElementSibling;
+          if (prevEl && prevEl.nodeName === "TASK-ROW") {
+            this.currFocus = prevEl;
+            this.currFocus.focus();
+          }
+        } else {
+          var firstEl = this.$.rows.firstElementChild;
+          if (firstEl) {
+            this.currFocus = firstEl;
+            this.currFocus.focus();
+          }
+        }
+      }
+
+      setFocus(e) {
+        e.target.focus();
+        this.currFocus = e.target;
       }
 
     }

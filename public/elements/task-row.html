@@ -1,3 +1,4 @@
+<link rel="import" href="../bower_components/iron-a11y-keys/iron-a11y-keys.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
@@ -49,12 +50,19 @@
       data="{{project}}">
     </firebase-document>
  
+    <iron-a11y-keys
+      id="a11y"
+      target="[[target]]"
+      keys="s"
+      on-keys-pressed="toggleStar">
+    </iron-a11y-keys>
+ 
     <div id="row" class="layout horizontal highlight">
       <iron-icon class="item point" icon="[[starIcon]]" on-tap="toggleStar"></iron-icon>
 
-      <a class="item name flex-6" href="/task/[[task.$key]]">
+      <div class="item name flex-6" href="/task/[[task.$key]]">
         [[task.name]]
-      </a>
+      </div>
       <div class="item point flex-2">
         <div on-tap="openProjectPicker">
           <iron-icon icon="my-icons:folder-open"></iron-icon>
@@ -96,7 +104,8 @@
           starIcon: {
             type: String,
             computed: 'determineIcon(task.isStarred)'
-          }
+          },
+          target: Object
         }
       }
 
@@ -104,6 +113,7 @@
         super.ready();
         this.$.picker.addEventListener('project-selected',
           e => this._handleProjectChange(e));
+        this.target = this;
       }
 
       complete() {
