@@ -51,10 +51,24 @@
     </firebase-document>
  
     <iron-a11y-keys
-      id="a11y"
       target="[[target]]"
       keys="s"
       on-keys-pressed="toggleStar">
+    </iron-a11y-keys>
+    <iron-a11y-keys
+      target="[[target]]"
+      keys="c"
+      on-keys-pressed="complete">
+    </iron-a11y-keys>
+    <iron-a11y-keys
+      target="[[target]]"
+      keys="p"
+      on-keys-pressed="openProjectPicker">
+    </iron-a11y-keys>
+    <iron-a11y-keys
+      target="[[target]]"
+      keys="d"
+      on-keys-pressed="editOn">
     </iron-a11y-keys>
  
     <div id="row" class="layout horizontal highlight">
