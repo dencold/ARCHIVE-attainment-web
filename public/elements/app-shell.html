@@ -3,21 +3,12 @@
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="app-authed.html">
 <link rel="import" href="app-no-auth.html">
+<link rel="import" href="firebase-env.html">
 
 <dom-module id="app-shell">
   <template>
 
-    <!-- set our firebase config. note that the "api-key" is meant to be 
-         visibile to the public and is not a secret that needs to be 
-         protected.
-    -->
-    <firebase-app
-      id="firebase"
-      auth-domain="attainment-dev.firebaseapp.com"
-      database-url="https://attainment-dev.firebaseio.com"
-      api-key="AIzaSyBy6wjkoJPJVpysm2ZsFZ6VOxF8FhCtx68"
-      project-id="attainment-dev">
-    </firebase-app>
+    <firebase-env></firebase-env>
     <firebase-auth id="auth" user="{{user}}"></firebase-auth>
 
     <template is="dom-if" if="[[loading]]">

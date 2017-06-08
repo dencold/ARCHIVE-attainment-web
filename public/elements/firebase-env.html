@@ -1,0 +1,57 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<dom-module id="firebase-env">
+  <template>
+    <!-- set our firebase config. note that the "api-key" is meant to be 
+         visibile to the public and is not a secret that needs to be 
+         protected.
+    -->
+    <firebase-app
+      auth-domain="[[env.project]].firebaseapp.com"
+      database-url="https://[[env.project]].firebaseio.com"
+      api-key="[[env.apiKey]]"
+      project-id="[[env.project]]">
+    </firebase-app>
+
+  </template>
+
+  <script>
+    class FirebaseEnv extends Polymer.Element {
+      static get is() { return 'firebase-env'; }
+
+      static get properties() {
+        return {
+          prod: Boolean,
+          env: {
+            type: Object,
+            computed: '_setEnv(prod)',
+            value: function() {return this.develop();}
+          }
+        }
+      }
+
+      develop() {
+        return {
+          "project": "attainment-dev",
+          "apiKey": "AIzaSyBy6wjkoJPJVpysm2ZsFZ6VOxF8FhCtx68"
+        };
+      }
+
+      production() {
+        return {
+          "project": "attainment-6017d",
+          "apiKey": "AIzaSyDs8E_p1Uyiq9mLcBC6G__Kdzu3ggkgt9I"
+        };
+      }
+
+      _setEnv(prod) {
+        if (prod) {
+          return this.production();
+        }
+      }
+
+    }
+
+    window.customElements.define(FirebaseEnv.is, FirebaseEnv);
+  </script>
+</dom-module>
