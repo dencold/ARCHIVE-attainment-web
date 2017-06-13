@@ -1,6 +1,7 @@
 <link rel="import" href="../bower_components/iron-a11y-keys/iron-a11y-keys.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html">
@@ -20,7 +21,9 @@
       .highlight:hover {
         background-color: #c2d4de;
       }
-
+      #row {
+        max-width: 700px;
+      }
       a {
         text-decoration: none;
         color: black;
@@ -29,9 +32,16 @@
         padding: 5px;
       }
       .date {
-        width: 110px;
+        width: 130px;
+      }
+      .proj {
+        width: 200px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
       .name {
+        min-width: 200px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -43,6 +53,7 @@
     <style include="iron-flex"></style> 
     <style include="iron-flex-factors"></style> 
 
+    <iron-media-query query="(max-width: 500px)" query-matches="{{narrow}}"></iron-media-query>
     <app-location route="{{route}}"></app-location>
     <task-manager id="taskMgr"></task-manager>
     <star-manager id="starMgr"></star-manager>
@@ -81,17 +92,17 @@
     <div id="row" class="layout horizontal highlight">
       <iron-icon class="item point" icon="[[starIcon]]" on-tap="toggleStar"></iron-icon>
 
-      <div class="item name flex-6" href="/task/[[task.$key]]">
+      <div class="item name flex" href="/task/[[task.$key]]">
         [[task.name]]
       </div>
-      <div class="item point flex-2">
+      <div class="item point proj" hidden$=[[narrow]]>
         <div on-tap="openProjectPicker">
           <iron-icon icon="my-icons:folder-open"></iron-icon>
           [[project.name]]
         </div>
         <project-picker id="picker"></project-picker>
       </div>
-      <div class="item date point flex-auto" on-tap="editOn">
+      <div class="item date point" on-tap="editOn">
         <iron-icon icon="my-icons:event"></iron-icon>
         [[formattedDue]]
         <input id="dueInput"
@@ -101,7 +112,6 @@
                on-focus="editOn"
                on-blur="editOff">
       </div>
-      <iron-icon class="item point" icon="my-icons:done" on-tap="complete"></iron-icon>
     </div>
     
   </template>
@@ -114,6 +124,7 @@
         return {
           task: Object,
           days: Number,
+          narrow: Boolean,
           formattedDue: {
             type: String,
             computed: 'formatDate(task.dueAt)'

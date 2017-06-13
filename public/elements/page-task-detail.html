@@ -1,4 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-a11y-keys/iron-a11y-keys.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-input/paper-textarea.html">
@@ -43,14 +44,28 @@
     </firebase-document>
     <task-manager id="taskMgr"></task-manager>
 
-    <input-editor class="title" text="{{task.name}}"></input-editor>
+    <iron-a11y-keys
+      target="[[target]]"
+      keys="e"
+      on-keys-pressed="editName">
+    </iron-a11y-keys>
+
+    <iron-a11y-keys
+      target="[[target]]"
+      keys="n"
+      on-keys-pressed="editNotes">
+    </iron-a11y-keys>
+
+    <div id="details" tabindex="0">
+    <input-editor id="name" tabindex="0" class="title" text="{{task.name}}"></input-editor>
     <div on-tap="openProjectPicker">Project: [[currProject.name]]</div>
-    <project-picker id="picker"></project-picker>
-    <markdown-editor text="{{task.notes}}"></markdown-editor>
+    <project-picker tabindex="0" id="picker"></project-picker>
+    <markdown-editor id="notes" tabindex="0" text="{{task.notes}}"></markdown-editor>
 
     <p hidden$="[[!task.gmailThreadId]]">Gmail: [[task.gmailThreadId]]</p>
 
     <paper-button id="done" class="primary" on-tap="done">Complete</paper-button>
+    </div>
 
   </template>
 
@@ -67,12 +82,14 @@
           task: {
             type: Object,
             notify: true
-          }
+          },
+          target: Object
         }
       }
 
       ready() {
         super.ready();
+        this.target = this.$.details;
         this.$.picker.addEventListener('project-selected',
           e => this._handleProjectChange(e));
       }
@@ -104,6 +121,15 @@
         if (prj) {
           this.$.taskMgr.updateProject(this.routeData.id, prj.$key);
         }
+      }
+
+      editName() {
+        this.$.name.editOn();
+      }
+
+      editNotes() {
+        console.log("notes");
+        this.$.notes.editOn();
       }
     }
 
