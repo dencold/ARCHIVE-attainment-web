@@ -63,6 +63,11 @@
         }
       }
 
+      ready() {
+        super.ready();
+        this.addEventListener('keydown', e => e.stopPropagation());
+      }
+
       editOn() {
         this.editing = true;
         // workaround for iron-textarea bug:

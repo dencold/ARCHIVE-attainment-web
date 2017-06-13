@@ -70,6 +70,7 @@
       ready() {
         super.ready();
         this.target = this;
+        this.addEventListener('keydown', e => e.stopPropagation());
       }
 
       submit() {

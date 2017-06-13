@@ -4,6 +4,7 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="my-icons.html">
 <link rel="import" href="project-picker.html">
 <link rel="import" href="shared-styles.html">
@@ -42,6 +43,7 @@
     <style include="iron-flex"></style> 
     <style include="iron-flex-factors"></style> 
 
+    <app-location route="{{route}}"></app-location>
     <task-manager id="taskMgr"></task-manager>
     <star-manager id="starMgr"></star-manager>
     <firebase-auth user="{{user}}"></firebase-auth> 
@@ -69,6 +71,11 @@
       target="[[target]]"
       keys="d"
       on-keys-pressed="editOn">
+    </iron-a11y-keys>
+    <iron-a11y-keys
+      target="[[target]]"
+      keys="o"
+      on-keys-pressed="openTask">
     </iron-a11y-keys>
  
     <div id="row" class="layout horizontal highlight">
@@ -201,6 +208,10 @@
         this.hideDateChange = true;
         this.changeDue(this.days);
         this.$.dueInput.value = "";
+      }
+
+      openTask() {
+        this.set('route.path', 'task/' + this.task.$key);
       }
 
     }

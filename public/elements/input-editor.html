@@ -40,6 +40,11 @@
         }
       }
 
+      ready() {
+        super.ready();
+        this.addEventListener('keydown', e => e.stopPropagation());
+      }
+
       editOn() {
         this.editing = true;
         this.$.input.focus();

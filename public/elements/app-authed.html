@@ -90,6 +90,22 @@
         tail="{{tail}}">
     </app-route>
 
+    <iron-a11y-keys
+      target="[[target]]"
+      keys="i"
+      on-keys-pressed="gotoInbox">
+    </iron-a11y-keys>
+    <iron-a11y-keys
+      target="[[target]]"
+      keys="a"
+      on-keys-pressed="gotoAction">
+    </iron-a11y-keys>
+    <iron-a11y-keys
+      target="[[target]]"
+      keys="p"
+      on-keys-pressed="gotoProjects">
+    </iron-a11y-keys>
+
     <app-header-layout has-scrolling-region fullbleed >
 
       <app-header fixed effects="waterfall" slot="header" >
@@ -106,7 +122,7 @@
         <app-drawer id="drawer" slot="drawer" >
           <div class="drawer-content">
           <iron-selector selected="[[routeData.page]]" attr-for-selected="name" role="navigation">
-            <a name="inbox" tabindex="-1" href="/project-detail/[[inboxProject.id]]" drawer-toggle>
+            <a name="inbox" tabindex="-1" href="/project-detail/[[inboxId]]" drawer-toggle>
               <iron-icon icon="my-icons:inbox"></iron-icon>
               Inbox
             </a>
@@ -150,11 +166,9 @@
 
       static get properties() {
         return {
-          inboxProject: {
-            type: Object,
-            value: {
-              id: "-KihIWrN5C8w5RNLV5g4"
-            }
+          inboxId: {
+            type: String,
+            value: "-KihIWrN5C8w5RNLV5g4"
           },
           user: Object,
           email: {
@@ -169,12 +183,17 @@
             type: Boolean,
             computed: 'shouldHideApp(user)',
           },
-            
           showLogin: {
             type: Boolean,
             computed: 'shouldHideLogin(user)',
-          }
+          },
+          target: Object
         }
+      }
+
+      ready() {
+        super.ready();
+        this.target = document.body;
       }
 
       login() {
@@ -213,7 +232,18 @@
       _toggleDrawer() {
         this.$.drawer.toggle();
       }
+
+      gotoInbox() {
+        this.set('route.path', '/project-detail/' + this.inboxId);
+      }
+      
+      gotoAction() {
+        this.set('route.path', '/action');
+      }
    
+      gotoProjects() {
+        this.set('route.path', '/projects');
+      }
     }
 
     window.customElements.define(AppAuthed.is, AppAuthed);
