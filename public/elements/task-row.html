@@ -92,9 +92,9 @@
     <div id="row" class="layout horizontal highlight">
       <iron-icon class="item point" icon="[[starIcon]]" on-tap="toggleStar"></iron-icon>
 
-      <div class="item name flex" href="/task/[[task.$key]]">
+      <a class="item name flex" tabindex="-1" href="/task/[[task.$key]]">
         [[task.name]]
-      </div>
+      </a>
       <div class="item point proj" hidden$=[[narrow]]>
         <div on-tap="openProjectPicker">
           <iron-icon icon="my-icons:folder-open"></iron-icon>

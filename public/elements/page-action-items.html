@@ -55,17 +55,17 @@
 
     <h2>Due Today / Overdue</h2>
     <template is="dom-repeat" items="[[overdueTasks]]" as="task">
-      <task-row class="row" task="[[task]]"></task-row>
+      <task-row class="row" tabindex="0" task="[[task]]"></task-row>
     </template>
 
     <h2>Next Actions</h2>
     <template is="dom-repeat" items="[[actionTasks]]" as="task">
-      <task-row class="row" task="[[task]]"></task-row>
+      <task-row class="row" tabindex="0" task="[[task]]"></task-row>
     </template>
 
     <h2>Due Tomorrow</h2>
     <template is="dom-repeat" items="[[tmrTasks]]" as="task">
-      <task-row class="row" task="[[task]]"></task-row>
+      <task-row class="row" tabindex="0" task="[[task]]"></task-row>
     </template>
   </template>
 
