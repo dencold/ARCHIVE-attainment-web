@@ -34,7 +34,7 @@
 
     <div class="layout horizontal wrap">
     <template is="dom-repeat" items="[[projects]]" as="project">
-      <project-chiclet name="[[project.name]]" key="[[project.$key]]">
+      <project-chiclet project="[[project]]">
       </project-chiclet>
     </template>
     </div>

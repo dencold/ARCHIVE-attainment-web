@@ -1,6 +1,7 @@
-<link rel="import" href="../bower_components/marked-element/marked-element.html">
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="my-icons.html">
 
 <dom-module id="project-chiclet">
   <template>
@@ -28,12 +29,17 @@
         color: black;
       }
     </style>
+    <style include="iron-flex"></style>
+    <style include="iron-flex-factors"></style>
 
-    <a href="/project-detail/[[key]]">
-      <div class="tab">
+    <a href="/project-detail/[[project.$key]]">
+      <div class="tab layout horizontal">
         <span class="content">
-          [[name]]
+          [[project.name]]
         </span>
+
+        <iron-icon icon="my-icons:star-border" hidden$="[[project.starredTask]]"></iron-icon>
+
       </div>
     </a>
 
@@ -45,8 +51,7 @@
 
       static get properties() {
         return {
-          name: String,
-          key: String
+          project: Object
         }
       }
 
