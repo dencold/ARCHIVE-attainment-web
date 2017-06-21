@@ -50,7 +50,7 @@
   </template>
 
   <script>
-    class InputSubmit extends Polymer.GestureEventListeners(Polymer.Element) {
+    class InputSubmit extends Polymer.Element {
       static get is() { return 'input-submit'; }
 
       static get properties() {
@@ -79,9 +79,15 @@
           return;
         }
 
-        this.value = this.$.input.value;
+        this.dispatchEvent(new CustomEvent(
+          'submit', {detail: {value: this.$.input.value}}
+        ));
         this.$.input.value = "";
-        this.dispatchEvent(new CustomEvent('submit', {detail: {value: this.value}}));
+      }
+
+      focus() {
+        this.$.input.value = "";
+        this.$.input.focus();
       }
 
     }

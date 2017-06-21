@@ -1,6 +1,6 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/iron-a11y-keys/iron-a11y-keys.html">
-<link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
@@ -56,17 +56,17 @@
       keys="k"
       on-keys-pressed="moveUp">
     </iron-a11y-keys>
-
     <input-editor class="title" text="{{project.name}}"></input-editor>
     <markdown-editor text="{{project.notes}}"></markdown-editor>
-    <input-submit value="{{newTask}}" label="Add Task" on-submit="add"></input-submit>
+    <input-submit id="submitter" label="Add Task" on-submit="handleSubmit">
+    </input-submit>
 
     <div id="rows">
-    <template is="dom-repeat" items="[[tasks]]" as="task">
-      <task-row class="row" tabindex="0" task="[[task]]" on-tap="setFocus"></task-row>
+    <template is="dom-repeat" id="repeater" items="[[tasks]]" as="task">
+      <task-row tabindex="0" task="[[task]]" on-tap="setFocus" on-focus="updateFocus">
+      </task-row>
     </template>
     </div>
-
 
   </template>
 
@@ -80,8 +80,13 @@
           routeData: Object,
           project: Object,
           tasks: Object,
+          newTask: String,
           target: Object,
           currFocus: Object,
+          active: {
+            type: Boolean,
+            observer: "activatePage"
+          }
         }
       }
 
@@ -90,12 +95,34 @@
         this.target = this.$.rows;
       }
 
-      add() {
-        this.$.tasksQuery.ref.push({
-          name: this.newTask,
-          createdAt: Date.now(),
-          projectId: this.routeData.id
-        });
+      activatePage(active, prevActive) {
+        if (active) {
+          this.currFocus = null;
+          this.$.submitter.focus();
+        }
+      }
+
+      initFocus() {
+        if (!this.currFocus) {
+          var firstRow = this.shadowRoot.querySelector("task-row");
+          if (firstRow) {
+            firstRow.focus();
+            this.currFocus = firstRow;
+          }
+        }
+        else {
+          this.currFocus.focus();
+        }
+      }
+
+      handleSubmit(e) {
+        if (e.detail.value) {
+          this.$.tasksQuery.ref.push({
+            name: e.detail.value,
+            createdAt: Date.now(),
+            projectId: this.routeData.id
+          });
+        }
       }
 
       handleError(e) {
@@ -109,12 +136,9 @@
             this.currFocus = nextEl;
             this.currFocus.focus();
           }
-        } else {
-          var firstEl = this.$.rows.firstElementChild;
-          if (firstEl) {
-            this.currFocus = firstEl;
-            this.currFocus.focus();
-          }
+        }
+        else {
+          this.initFocus();
         }
       }
 
@@ -125,17 +149,18 @@
             this.currFocus = prevEl;
             this.currFocus.focus();
           }
-        } else {
-          var firstEl = this.$.rows.firstElementChild;
-          if (firstEl) {
-            this.currFocus = firstEl;
-            this.currFocus.focus();
-          }
+        }
+        else {
+          this.initFocus();
         }
       }
 
       setFocus(e) {
         e.target.focus();
+        this.updateFocus(e);
+      }
+
+      updateFocus(e) {
         this.currFocus = e.target;
       }
 
