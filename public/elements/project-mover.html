@@ -1,6 +1,8 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/iron-dropdown/iron-dropdown.html">
 <link rel="import" href="../bower_components/iron-overlay-behavior/iron-overlay-behavior.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
 
 <!-- Polymer doesn't provide an iron-overlay element, just the behavior. A lot
      of this code is lifted from the Polymer shop's "shop-cart-model" element:
@@ -30,6 +32,13 @@
       }
     </style>
 
+    <firebase-auth user="{{user}}"></firebase-auth>
+    <firebase-query
+      id="projectQuery"
+      path="/users/[[user.uid]]/projects"
+      data="{{projects}}">
+    </firebase-query>
+
     <h2>Move to Project</h2>
     <input id="input" type="text" autofocus>
     <p>Yo yo yo</p>
@@ -48,7 +57,7 @@
   </template>
 
   <script>
-class ProjectMover extends Polymer.mixinBehaviors(
+    class ProjectMover extends Polymer.mixinBehaviors(
       [Polymer.IronOverlayBehaviorImpl], Polymer.Element) {
       static get is() { return 'project-mover'; }
 
@@ -73,13 +82,16 @@ class ProjectMover extends Polymer.mixinBehaviors(
         this.addEventListener('iron-overlay-canceled', (e)=>this._onCancel(e));
         this.addEventListener('keydown', e => e.stopPropagation());
       }
+
       _renderOpened() {
         this.restoreFocusOnClose = true;
         this.backdropElement.style.display = 'none';
         this.classList.add('opened');
+        this.$.input.focus();
       }
       _renderClosed() {
         this.classList.remove('opened');
+        this.$.input.value = "";
       }
       _onCancel(e) {
         // Don't restore focus when the overlay is closed after a mouse event
@@ -99,7 +111,7 @@ class ProjectMover extends Polymer.mixinBehaviors(
         }
       }
       get _focusableNodes() {
-        return [this.$.viewCartAnchor, this.$.closeBtn];
+        return [this.$.input, this.$.closeBtn];
       }
       refit() {}
       notifyResize() {}
@@ -110,7 +122,6 @@ class ProjectMover extends Polymer.mixinBehaviors(
         
         this.toggle();
       }
-      
     }
 
     window.customElements.define(ProjectMover.is, ProjectMover);
