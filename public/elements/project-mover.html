@@ -40,8 +40,8 @@
     </firebase-query>
 
     <h2>Move to Project</h2>
-    <input id="input" type="text" autofocus>
-    <p>Yo yo yo</p>
+    <input id="input" type="text" value="{{inputText::input}}" autofocus>
+    <p>New Project: [[selectedProject.name]]</p>
     
     <!--<iron-dropdown id="dropdown">
         <div slot="dropdown-content"> 
@@ -64,13 +64,27 @@
       static get properties() {
         return {
           projects: Object,
+          inputText: {
+            type: String,
+            observer: '_inpChanged'
+          },
           withBackdrop: {
             type: Boolean,
             value: true
           },
-          selectedProject: {
+          selectedProject: Object,
+          fuse: Object,
+          fuseOptions: {
             type: Object,
-            observer: '_changeProject'
+            value: {
+              shouldSort: true,
+              threshold: 0.6,
+              location: 0,
+              distance: 100,
+              maxPatternLength: 32,
+              minMatchCharLength: 1,
+              keys: ["name"]
+            }
           }
         }
       }
@@ -81,6 +95,14 @@
         this.addEventListener('transitionend', (e)=>this._transitionEnd(e));
         this.addEventListener('iron-overlay-canceled', (e)=>this._onCancel(e));
         this.addEventListener('keydown', e => e.stopPropagation());
+        this.fuse = new Fuse(this.projects, this.fuseOptions);
+      }
+
+      _inpChanged(newInp, oldInp) {
+        var result = this.fuse.search(newInp);
+        if (result.length > 0) {
+          this.selectedProject = result[0];
+        }
       }
 
       _renderOpened() {
@@ -115,13 +137,6 @@
       }
       refit() {}
       notifyResize() {}
-
-      _changeProject(newVal, oldVal) {
-        this.dispatchEvent(new CustomEvent('project-selected',
-          {detail: {project: newVal}}));
-        
-        this.toggle();
-      }
     }
 
     window.customElements.define(ProjectMover.is, ProjectMover);
