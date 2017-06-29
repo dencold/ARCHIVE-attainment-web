@@ -82,6 +82,7 @@
 
     <firebase-auth id="auth" user="{{user}}"></firebase-auth>
     
+    <project-mover id="mover"></project-mover>
     <app-location route="{{route}}"></app-location>
     <app-route
         route="{{route}}"
@@ -195,6 +196,11 @@
       ready() {
         super.ready();
         this.target = document.body;
+        this.addEventListener('move-project', e => this.openMovePrjDialog(e));
+      }
+
+      openMovePrjDialog(e) {
+        this.$.mover.open(e);
       }
 
       login() {

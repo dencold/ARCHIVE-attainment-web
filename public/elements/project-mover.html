@@ -1,8 +1,10 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-a11y-keys/iron-a11y-keys.html">
 <link rel="import" href="../bower_components/iron-dropdown/iron-dropdown.html">
 <link rel="import" href="../bower_components/iron-overlay-behavior/iron-overlay-behavior.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="task-manager.html">
 
 <!-- Polymer doesn't provide an iron-overlay element, just the behavior. A lot
      of this code is lifted from the Polymer shop's "shop-cart-model" element:
@@ -38,11 +40,19 @@
       path="/users/[[user.uid]]/projects"
       data="{{projects}}">
     </firebase-query>
+    <task-manager id="taskMgr"></task-manager>
+
+    <iron-a11y-keys
+      target="[[target]]"
+      keys="enter"
+      on-keys-pressed="submit">
+    </iron-a11y-keys>
 
     <h2>Move to Project</h2>
     <input id="input" type="text" value="{{inputText::input}}" autofocus>
     <p>New Project: [[selectedProject.name]]</p>
     
+    <!-- keeping this around, we'll probably want some viz on matching projects -->
     <!--<iron-dropdown id="dropdown">
         <div slot="dropdown-content"> 
           <input id="input" type="text">
@@ -64,6 +74,8 @@
       static get properties() {
         return {
           projects: Object,
+          task: Object,
+          target: Object,
           inputText: {
             type: String,
             observer: '_inpChanged'
@@ -90,12 +102,30 @@
       }
       ready() {
         super.ready();
+        this.target = this;
         this.setAttribute('role', 'dialog');
         this.setAttribute('aria-modal', 'true');
         this.addEventListener('transitionend', (e)=>this._transitionEnd(e));
         this.addEventListener('iron-overlay-canceled', (e)=>this._onCancel(e));
         this.addEventListener('keydown', e => e.stopPropagation());
         this.fuse = new Fuse(this.projects, this.fuseOptions);
+      }
+
+      open(e) {
+        if (e.detail.task) {
+          this.task = e.detail.task;
+        } else {
+          this.task = null;
+        }
+
+        super.open();
+      }
+
+      submit() {
+        if (this.task && this.selectedProject) {
+          this.$.taskMgr.updateProject(this.task.$key, this.selectedProject.$key);
+          this.close();
+        }
       }
 
       _inpChanged(newInp, oldInp) {
@@ -114,6 +144,7 @@
       _renderClosed() {
         this.classList.remove('opened');
         this.$.input.value = "";
+        this.selectedProject = null;
       }
       _onCancel(e) {
         // Don't restore focus when the overlay is closed after a mouse event
