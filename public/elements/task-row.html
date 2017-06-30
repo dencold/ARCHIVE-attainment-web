@@ -7,7 +7,6 @@
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="my-icons.html">
-<link rel="import" href="project-picker.html">
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="star-manager.html">
 <link rel="import" href="task-manager.html">
@@ -75,8 +74,8 @@
     </iron-a11y-keys>
     <iron-a11y-keys
       target="[[target]]"
-      keys="p"
-      on-keys-pressed="openProjectPicker">
+      keys="m"
+      on-keys-pressed="moveProject">
     </iron-a11y-keys>
     <iron-a11y-keys
       target="[[target]]"
@@ -96,11 +95,10 @@
         [[task.name]]
       </a>
       <div class="item point proj" hidden$=[[narrow]]>
-        <div on-tap="openProjectPicker">
+        <div on-tap="moveProject">
           <iron-icon icon="my-icons:folder-open"></iron-icon>
           [[project.name]]
         </div>
-        <project-picker id="picker"></project-picker>
       </div>
       <div class="item date point" on-tap="editOn">
         <iron-icon icon="my-icons:event"></iron-icon>
@@ -143,8 +141,6 @@
 
       ready() {
         super.ready();
-        this.$.picker.addEventListener('project-selected',
-          e => this._handleProjectChange(e));
         this.target = this;
       }
 
@@ -152,15 +148,10 @@
         this.$.taskMgr.complete(this.task.$key);
       }
 
-      openProjectPicker() {
-        this.$.picker.toggle();
-      }
-
-      _handleProjectChange(e) {
-        var prj = JSON.parse(e.detail.project);
-        if (prj) {
-          this.$.taskMgr.updateProject(this.task.$key, prj.$key);
-        }
+      moveProject() {
+        this.dispatchEvent(new CustomEvent(
+          'move-project', {bubbles: true, composed: true, detail: {task: this.task}}
+        ));
       }
 
       formatDate(dueAt) {
