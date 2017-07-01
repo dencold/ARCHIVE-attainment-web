@@ -52,14 +52,19 @@
 
     <iron-a11y-keys
       target="[[target]]"
+      keys="m"
+      on-keys-pressed="moveProject">
+    </iron-a11y-keys>
+
+    <iron-a11y-keys
+      target="[[target]]"
       keys="n"
       on-keys-pressed="editNotes">
     </iron-a11y-keys>
 
     <div id="details" tabindex="0">
     <input-editor id="name" tabindex="0" class="title" text="{{task.name}}"></input-editor>
-    <div on-tap="openProjectPicker">Project: [[currProject.name]]</div>
-    <project-picker tabindex="0" id="picker"></project-picker>
+    <div on-tap="moveProject">Project: [[currProject.name]]</div>
     <markdown-editor id="notes" tabindex="0" text="{{task.notes}}"></markdown-editor>
 
     <p hidden$="[[!task.gmailThreadId]]">Gmail: [[task.gmailThreadId]]</p>
@@ -90,8 +95,6 @@
       ready() {
         super.ready();
         this.target = this.$.details;
-        this.$.picker.addEventListener('project-selected',
-          e => this._handleProjectChange(e));
       }
 
       done() {
@@ -112,15 +115,14 @@
         this.set('router.path', '/project-detail/' + projectId);
       }
 
-      openProjectPicker() {
-        this.$.picker.toggle();
-      }
-
-      _handleProjectChange(e) {
-        var prj = JSON.parse(e.detail.project);
-        if (prj) {
-          this.$.taskMgr.updateProject(this.routeData.id, prj.$key);
-        }
+      moveProject() {
+        // we *must* have $key set, but firebase-document doesn't give you one on the
+        // object you get back from the db. so annoying. fabricating this here:
+        var task = this.task;
+        task["$key"] = this.routeData.id;
+        this.dispatchEvent(new CustomEvent(
+          'move-project', {bubbles: true, composed: true, detail: {task: task}}
+        ));
       }
 
       editName() {
