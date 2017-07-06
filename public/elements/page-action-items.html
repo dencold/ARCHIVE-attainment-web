@@ -8,6 +8,7 @@
 <link rel="import" href="markdown-editor.html">
 <link rel="import" href="task-row.html">
 <link rel="import" href="shared-styles.html">
+<link rel="import" href="vim-movement.html">
 
 <dom-module id="page-action-items">
   <template>
@@ -53,20 +54,22 @@
 
     <h1>Action Items</h1>
 
-    <h2>Due Today / Overdue</h2>
-    <template is="dom-repeat" items="[[overdueTasks]]" as="task">
-      <task-row class="row" tabindex="0" task="[[task]]"></task-row>
-    </template>
+    <vim-movement id="mvmt">
+      <h2>Due Today / Overdue</h2>
+      <template is="dom-repeat" items="[[overdueTasks]]" as="task">
+        <task-row tabindex="0" task="[[task]]" on-tap="setFocus" on-focus="updateFocus"></task-row>
+      </template>
 
-    <h2>Next Actions</h2>
-    <template is="dom-repeat" items="[[actionTasks]]" as="task">
-      <task-row class="row" tabindex="0" task="[[task]]"></task-row>
-    </template>
+      <h2>Next Actions</h2>
+      <template is="dom-repeat" items="[[actionTasks]]" as="task">
+        <task-row tabindex="0" task="[[task]]" on-tap="setFocus" on-focus="updateFocus"></task-row>
+      </template>
 
-    <h2>Due Tomorrow</h2>
-    <template is="dom-repeat" items="[[tmrTasks]]" as="task">
-      <task-row class="row" tabindex="0" task="[[task]]"></task-row>
-    </template>
+      <h2>Due Tomorrow</h2>
+      <template is="dom-repeat" items="[[tmrTasks]]" as="task">
+        <task-row tabindex="0" task="[[task]]" on-tap="setFocus" on-focus="updateFocus"></task-row>
+      </template>
+    </vim-movement>
   </template>
 
   <script>
@@ -125,6 +128,15 @@
         var ret = moment().add(1, 'd');
         ret.hour(23).minute(59).second(59).millisecond(999);
         return ret.valueOf();
+      }
+
+      setFocus(e) {
+        e.target.focus();
+        this.updateFocus(e);
+      }
+
+      updateFocus(e) {
+        this.$.mvmt.setFocus(e.target);
       }
     }
 
