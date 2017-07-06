@@ -1,0 +1,85 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-a11y-keys/iron-a11y-keys.html">
+
+<dom-module id="vim-movement">
+  <template>
+
+    <iron-a11y-keys
+      target="[[target]]"
+      keys="j"
+      on-keys-pressed="moveDown">
+    </iron-a11y-keys>
+
+    <iron-a11y-keys
+      target="[[target]]"
+      keys="k"
+      on-keys-pressed="moveUp">
+    </iron-a11y-keys>
+
+    <slot></slot>
+  </template>
+
+  <script>
+    class VimMovement extends Polymer.Element {
+      static get is() { return 'vim-movement'; }
+
+      static get properties() {
+        return {
+          target: Object,
+          currFocus: Object
+        }
+      }
+
+      ready() {
+        super.ready();
+        this.target = this;
+      }
+
+      setFocus(el) {
+        this.currFocus = el;
+      }
+
+      initFocus() {
+        if (!this.currFocus) {
+          var firstRow = this.firstElementChild;
+          if (firstRow) {
+            firstRow.focus();
+            this.setFocus(firstRow);
+          }
+        }
+        else {
+          this.currFocus.focus();
+        }
+      }
+
+      moveDown() {
+        if (this.currFocus) {
+          var nextEl = this.currFocus.nextElementSibling;
+          if (nextEl && nextEl.nodeName === "TASK-ROW") {
+            nextEl.focus();
+            this.setFocus(nextEl);
+          }
+        }
+        else {
+          this.initFocus();
+        }
+      }
+
+      moveUp() {
+        if (this.currFocus) {
+          var prevEl = this.currFocus.previousElementSibling;
+          if (prevEl && prevEl.nodeName === "TASK-ROW") {
+            prevEl.focus();
+            this.setFocus(prevEl);
+          }
+        }
+        else {
+          this.initFocus();
+        }
+      }
+
+    }
+
+    window.customElements.define(VimMovement.is, VimMovement);
+  </script>
+</dom-module>
