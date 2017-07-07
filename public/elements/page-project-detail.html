@@ -1,6 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="../bower_components/iron-a11y-keys/iron-a11y-keys.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
@@ -11,6 +10,7 @@
 <link rel="import" href="markdown-editor.html">
 <link rel="import" href="task-row.html">
 <link rel="import" href="shared-styles.html">
+<link rel="import" href="vim-movement.html">
 
 <dom-module id="page-project-detail">
   <template>
@@ -45,28 +45,17 @@
       on-error="handleError">
     </firebase-query>
 
-    <iron-a11y-keys
-      target="[[target]]"
-      keys="j"
-      on-keys-pressed="moveDown">
-    </iron-a11y-keys>
-
-    <iron-a11y-keys
-      target="[[target]]"
-      keys="k"
-      on-keys-pressed="moveUp">
-    </iron-a11y-keys>
     <input-editor class="title" text="{{project.name}}"></input-editor>
     <markdown-editor text="{{project.notes}}"></markdown-editor>
     <input-submit id="submitter" label="Add Task" on-submit="handleSubmit">
     </input-submit>
 
-    <div id="rows">
-    <template is="dom-repeat" id="repeater" items="[[tasks]]" as="task">
-      <task-row tabindex="0" task="[[task]]" on-tap="setFocus" on-focus="updateFocus">
-      </task-row>
-    </template>
-    </div>
+    <vim-movement id="mvmt">
+      <template is="dom-repeat" id="repeater" items="[[tasks]]" as="task">
+        <task-row tabindex="0" task="[[task]]" on-tap="setFocus" on-focus="updateFocus">
+        </task-row>
+      </template>
+    </vim-movement>
 
   </template>
 
@@ -81,8 +70,6 @@
           project: Object,
           tasks: Object,
           newTask: String,
-          target: Object,
-          currFocus: Object,
           active: {
             type: Boolean,
             observer: "activatePage"
@@ -92,26 +79,12 @@
 
       ready() {
         super.ready();
-        this.target = this.$.rows;
       }
 
       activatePage(active, prevActive) {
         if (active) {
           this.currFocus = null;
           this.$.submitter.focus();
-        }
-      }
-
-      initFocus() {
-        if (!this.currFocus) {
-          var firstRow = this.shadowRoot.querySelector("task-row");
-          if (firstRow) {
-            firstRow.focus();
-            this.currFocus = firstRow;
-          }
-        }
-        else {
-          this.currFocus.focus();
         }
       }
 
@@ -129,39 +102,13 @@
         console.log("ERROR: " + e.message);
       }
 
-      moveDown() {
-        if (this.currFocus) {
-          var nextEl = this.currFocus.nextElementSibling;
-          if (nextEl && nextEl.nodeName === "TASK-ROW") {
-            this.currFocus = nextEl;
-            this.currFocus.focus();
-          }
-        }
-        else {
-          this.initFocus();
-        }
-      }
-
-      moveUp() {
-        if (this.currFocus) {
-          var prevEl = this.currFocus.previousElementSibling;
-          if (prevEl && prevEl.nodeName === "TASK-ROW") {
-            this.currFocus = prevEl;
-            this.currFocus.focus();
-          }
-        }
-        else {
-          this.initFocus();
-        }
-      }
-
       setFocus(e) {
         e.target.focus();
         this.updateFocus(e);
       }
 
       updateFocus(e) {
-        this.currFocus = e.target;
+        this.$.mvmt.setFocus(e.target);
       }
 
     }
