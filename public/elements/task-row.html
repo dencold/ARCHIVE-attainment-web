@@ -144,6 +144,12 @@
         this.target = this;
       }
 
+      focus() {
+        // i have *no* idea why this is necessary, but without it, focus from
+        // vim-movement does not work.
+        super.focus();
+      }
+
       complete() {
         this.$.taskMgr.complete(this.task.$key);
       }
