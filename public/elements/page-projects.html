@@ -30,7 +30,8 @@
 
     <div class="title">Projects</div>
 
-    <input-submit value="{{newProject}}" label="Add Project" on-submit="add"></input-submit>
+    <input-submit id="submitter" label="Add Project" on-submit="handleSubmit">
+    </input-submit>
 
     <div class="layout horizontal wrap">
     <template is="dom-repeat" items="[[projects]]" as="project">
@@ -53,11 +54,13 @@
         }
       }
 
-      add() {
-        this.$.query.ref.push({
-          name: this.newProject,
-          createdAt: Date.now()
-        });
+      handleSubmit(e) {
+        if (e.detail.value) {
+          this.$.query.ref.push({
+            name: e.detail.value,
+            createdAt: Date.now()
+          });
+        }
       }
     }
 
