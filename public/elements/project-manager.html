@@ -1,0 +1,54 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="task-manager.html">
+
+<dom-module id="project-manager">
+  <template>
+    <firebase-auth user="{{user}}"></firebase-auth> 
+    <firebase-query
+      id="projectDB"
+      path="/users/[[user.uid]]/projects">
+    </firebase-query>
+    <firebase-query
+      id="archiveDB"
+      path="/users/[[user.uid]]/archived/projects">
+    </firebase-query>
+
+    <task-manager id="taskMgr"></task-manager>
+  </template>
+
+  <script>
+    class ProjectManager extends Polymer.Element {
+      static get is() { return 'project-manager'; }
+
+      complete(id) {
+        var projectRef = this.$.projectDB.ref.child(id);
+        var archiveRef = this.$.archiveDB.ref.child(id);
+
+        // first, complete all of the associated tasks
+        this.$.taskMgr.completeProjectTasks(id);
+
+        // now, we need to do three things:
+        // 1. get the project in firebase & set its completedAt property
+        // 2. copy its value data into the archive reference
+        // 3. delete the original reference
+        projectRef.once('value')
+          .then( snap => {
+            var project = snap.val();
+            project.completedAt = Date.now();
+            archiveRef.set(project);
+            return project;
+          })
+          .then( project => {
+            projectRef.remove()
+            return project;
+          })
+          .catch(error => console.log("ERROR archiving project: " + error.message));
+      }
+
+    }
+
+    window.customElements.define(ProjectManager.is, ProjectManager);
+  </script>
+</dom-module>
