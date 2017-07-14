@@ -1,6 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html">
@@ -8,6 +9,7 @@
 <link rel="import" href="input-editor.html">
 <link rel="import" href="input-submit.html">
 <link rel="import" href="markdown-editor.html">
+<link rel="import" href="project-manager.html">
 <link rel="import" href="task-row.html">
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="vim-movement.html">
@@ -19,10 +21,15 @@
         display: block;
         padding: 20px;
       }
+
+      paper-dialog {
+        padding: 25px;
+      }
     </style>
     <style include="iron-flex"></style>
     <style include="iron-flex-factors"></style>
 
+    <project-manager id="mgr"></project-manager>
     <app-route
         route="{{route}}"
         pattern="/:id"
@@ -45,6 +52,15 @@
       on-error="handleError">
     </firebase-query>
 
+    <paper-dialog id="dialog">
+      <h2>Archive Project?</h2>
+      <p>This will archive the project and all tasks associated with it</p>
+      <div class="buttons">
+        <paper-button dialog-dismiss autofocus>Cancel</paper-button>
+        <paper-button dialog-confirm on-tap="handleArchive">Accept</paper-button>
+      </div>
+    </paper-dialog>
+
     <input-editor class="title" text="{{project.name}}"></input-editor>
     <markdown-editor text="{{project.notes}}"></markdown-editor>
     <input-submit id="submitter" label="Add Task" on-submit="handleSubmit">
@@ -57,6 +73,9 @@
       </template>
     </vim-movement>
 
+    <paper-button id="archive" tabindex="-1" class="primary" on-tap="openDialog">
+      Archive
+    </paper-button>
   </template>
 
   <script>
@@ -96,6 +115,15 @@
             projectId: this.routeData.id
           });
         }
+      }
+
+      openDialog() {
+        this.$.dialog.open();
+      }
+
+      handleArchive() {
+        this.$.mgr.complete(this.routeData.id);
+        this.set('router.path', '/projects');
       }
 
       handleError(e) {
