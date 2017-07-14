@@ -57,6 +57,23 @@
           .catch(error => console.log("ERROR archiving task: " + error.message));
       }
       
+      completeProjectTasks(projectId) {
+        var taskRef = this.$.taskDB.ref;
+
+        taskRef.orderByChild("projectId").equalTo(projectId).once('value')
+          .then( snap => {
+            var tasks = snap.val();
+
+            // we have to iterate over our tasks and complete one-by-one
+            for (var taskId in tasks) {
+              if (!tasks.hasOwnProperty(taskId)) continue;
+
+              this.complete(taskId);
+            }
+          })
+          .catch(error => console.log("ERROR completing project tasks: " + error.message));
+      }
+
       updateProject(taskId, projectId) {
         var taskRef = this.$.taskDB.ref.child(taskId);
 
