@@ -2,36 +2,64 @@
 <link rel="import" href="../bower_components/iron-a11y-keys/iron-a11y-keys.html">
 <link rel="import" href="../bower_components/iron-dropdown/iron-dropdown.html">
 <link rel="import" href="../bower_components/iron-overlay-behavior/iron-overlay-behavior.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="task-manager.html">
 
-<dom-module id="project-mover">
+<!--
+  Polymer doesn't provide an iron-overlay element, just the behavior. I've
+  decided to roll my own here, mostly inspired from this post:
+  https://css-tricks.com/considerations-styling-modal/
+-->
+<dom-module id="modal-overlay">
   <template>
     <style>
-       :host {
+      .modal {
+        /* This way it could be display flex or grid or whatever also. */
         display: block;
+
+        /* Probably need media queries here */
+        width: 600px;
+        max-width: 100%;
+        height: 400px;
+        max-height: 100%;
         position: fixed;
-        background-color: #FFF;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-        width: 320px;
-        height: 200px;
-        padding: 12px;
-        visibility: hidden;
-        /* center the modal on the screen */
-        top: 50%;
+        z-index: 100;
         left: 50%;
-        margin: -100px 0 0 -160px;
+        top: 50%;
+
+        /* Use this for centering if unknown width/height */
+        transform: translate(-50%, -50%);
+
+        /* If known, negative margins are probably better (less chance of blurry text). */
+        /* margin: -200px 0 0 -200px; */
+
+        background: white;
+        box-shadow: 0 0 60px 10px rgba(0, 0, 0, 0.9);
       }
-      :host(.opened) {
-        visibility: visible;
+      .closed {
+        display: none;
       }
-      [slot="dropdown-content"] {
-        background-color: white;
-        line-height: 40px;
-        padding: 0 10px 0 10px;
-        box-shadow: 0px 2px 6px #ccc;
-        list-style: none;
+
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 50;
+
+        background: rgba(0, 0, 0, 0.6);
+      }
+      .modal-guts {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        padding: 20px 50px 20px 20px;
       }
     </style>
 
@@ -49,30 +77,28 @@
       on-keys-pressed="submit">
     </iron-a11y-keys>
 
-    <div class="overlay">
-      <h2>Move to Project</h2>
-      <input id="input" type="text" value="{{inputText::input}}" autofocus>
-      <p>New Project: [[selectedProject.name]]</p>
+    <iron-a11y-keys
+      target="[[target]]"
+      keys="esc"
+      on-keys-pressed="close">
+    </iron-a11y-keys>
+
+    <div class="modal-overlay closed" id="overlay"></div>
+
+    <div class="modal closed" id="modal">
+      <div class="modal-guts">
+        <h1>Move to Project</h1>
+        <input id="input" type="text" value="{{inputText::input}}" autofocus>
+        <p>New Project: [[selectedProject.name]]</p>
+        <paper-button id="submit" tabindex="-1" class="primary" on-tap="close">Cancel</paper-button>
+      </div>
     </div>
-    
-    <!-- keeping this around, we'll probably want some viz on matching projects -->
-    <!--<iron-dropdown id="dropdown">
-        <div slot="dropdown-content"> 
-          <input id="input" type="text">
-          <iron-selector id="selector" selected="{{selectedProject}}" attr-for-selected="val">
-        <template is="dom-repeat" items="[[projects]]" as="project">
-          <div val$="[[project]]" >[[project.name]]</div>
-        </template>
-      </iron-selector>
-        </div>
-    </iron-dropdown>
-    -->
+
   </template>
 
   <script>
-    class ProjectMover extends Polymer.mixinBehaviors(
-      [Polymer.IronOverlayBehaviorImpl], Polymer.Element) {
-      static get is() { return 'project-mover'; }
+    class ModalOverlay extends Polymer.Element {
+      static get is() { return 'modal-overlay'; }
 
       static get properties() {
         return {
@@ -82,10 +108,6 @@
           inputText: {
             type: String,
             observer: '_inpChanged'
-          },
-          withBackdrop: {
-            type: Boolean,
-            value: true
           },
           selectedProject: Object,
           fuse: Object,
@@ -106,10 +128,6 @@
       ready() {
         super.ready();
         this.target = this;
-        this.setAttribute('role', 'dialog');
-        this.setAttribute('aria-modal', 'true');
-        this.addEventListener('transitionend', (e)=>this._transitionEnd(e));
-        this.addEventListener('iron-overlay-canceled', (e)=>this._onCancel(e));
         this.addEventListener('keydown', e => e.stopPropagation());
         this.fuse = new Fuse(this.projects, this.fuseOptions);
       }
@@ -121,7 +139,9 @@
           this.task = null;
         }
 
-        super.open();
+        this.$.modal.classList.remove("closed");
+        this.$.overlay.classList.remove("closed");
+        this.$.input.focus();
       }
 
       submit() {
@@ -131,6 +151,13 @@
         }
       }
 
+      close() {
+        this.$.modal.classList.add('closed');
+        this.$.overlay.classList.add('closed');
+        this.$.input.value = "";
+        this.selectedProject = null;
+      }
+
       _inpChanged(newInp, oldInp) {
         var result = this.fuse.search(newInp);
         if (result.length > 0) {
@@ -138,18 +165,6 @@
         }
       }
 
-      _renderOpened() {
-        this.$.input.value = "";
-        this.restoreFocusOnClose = true;
-        this.backdropElement.style.display = 'none';
-        this.classList.add('opened');
-        this.$.input.focus();
-      }
-      _renderClosed() {
-        this.classList.remove('opened');
-        this.$.input.value = "";
-        this.selectedProject = null;
-      }
       _onCancel(e) {
         // Don't restore focus when the overlay is closed after a mouse event
         if (e.detail instanceof MouseEvent) {
@@ -167,13 +182,8 @@
           this.backdropElement.style.display = '';
         }
       }
-      get _focusableNodes() {
-        return [this.$.input, this.$.closeBtn];
-      }
-      refit() {}
-      notifyResize() {}
     }
 
-    window.customElements.define(ProjectMover.is, ProjectMover);
+    window.customElements.define(ModalOverlay.is, ModalOverlay);
   </script>
 </dom-module>

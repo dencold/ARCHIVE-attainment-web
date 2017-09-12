@@ -20,6 +20,7 @@
 <link rel="import" href="page-settings.html">
 <link rel="import" href="page-404.html">
 <link rel="import" href="project-mover.html">
+<link rel="import" href="modal-overlay.html">
 
 <dom-module id="app-authed">
   <template>
@@ -83,7 +84,8 @@
 
     <firebase-auth id="auth" user="{{user}}"></firebase-auth>
     
-    <project-mover id="mover"></project-mover>
+    <!--<project-mover id="mover"></project-mover>-->
+    <modal-overlay id="mover"></modal-overlay>
     <app-location route="{{route}}"></app-location>
     <app-route
         route="{{route}}"

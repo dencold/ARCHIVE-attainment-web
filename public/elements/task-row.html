@@ -49,19 +49,19 @@
         cursor: pointer;
       }
     </style>
-    <style include="iron-flex"></style> 
-    <style include="iron-flex-factors"></style> 
+    <style include="iron-flex"></style>
+    <style include="iron-flex-factors"></style>
 
     <iron-media-query query="(max-width: 500px)" query-matches="{{narrow}}"></iron-media-query>
     <app-location route="{{route}}"></app-location>
     <task-manager id="taskMgr"></task-manager>
     <star-manager id="starMgr"></star-manager>
-    <firebase-auth user="{{user}}"></firebase-auth> 
+    <firebase-auth user="{{user}}"></firebase-auth>
     <firebase-document
       path="/users/[[user.uid]]/projects/[[task.projectId]]"
       data="{{project}}">
     </firebase-document>
- 
+
     <iron-a11y-keys
       target="[[target]]"
       keys="s"
@@ -74,11 +74,6 @@
     </iron-a11y-keys>
     <iron-a11y-keys
       target="[[target]]"
-      keys="m"
-      on-keys-pressed="moveProject">
-    </iron-a11y-keys>
-    <iron-a11y-keys
-      target="[[target]]"
       keys="d"
       on-keys-pressed="editOn">
     </iron-a11y-keys>
@@ -87,7 +82,7 @@
       keys="o"
       on-keys-pressed="openTask">
     </iron-a11y-keys>
- 
+
     <div id="row" class="layout horizontal highlight">
       <iron-icon class="item point" icon="[[starIcon]]" on-tap="toggleStar"></iron-icon>
 
@@ -111,7 +106,7 @@
                on-blur="editOff">
       </div>
     </div>
-    
+
   </template>
 
   <script>
@@ -142,6 +137,7 @@
       ready() {
         super.ready();
         this.target = this;
+        this.addEventListener('keyup', e => this.handleKeyEvent(e));
       }
 
       focus() {
@@ -154,7 +150,13 @@
         this.$.taskMgr.complete(this.task.$key);
       }
 
-      moveProject() {
+      handleKeyEvent(e) {
+        if (e.key == 'm') {
+          this.moveProject(e);
+        }
+      }
+
+      moveProject(e) {
         this.dispatchEvent(new CustomEvent(
           'move-project', {bubbles: true, composed: true, detail: {task: this.task}}
         ));
