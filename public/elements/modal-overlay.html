@@ -1,11 +1,4 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../bower_components/iron-a11y-keys/iron-a11y-keys.html">
-<link rel="import" href="../bower_components/iron-dropdown/iron-dropdown.html">
-<link rel="import" href="../bower_components/iron-overlay-behavior/iron-overlay-behavior.html">
-<link rel="import" href="../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
-<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
-<link rel="import" href="task-manager.html">
 
 <!--
   Polymer doesn't provide an iron-overlay element, just the behavior. I've
@@ -78,24 +71,13 @@
       static get is() { return 'modal-overlay'; }
 
       open(e) {
-        /*
-        if (e.detail.task) {
-          this.task = e.detail.task;
-        } else {
-          this.task = null;
-        }
-        */
-
         this.$.modal.classList.remove("closed");
         this.$.overlay.classList.remove("closed");
-       // this.$.input.focus();
       }
 
       close() {
         this.$.modal.classList.add('closed');
         this.$.overlay.classList.add('closed');
-        //this.$.input.value = "";
-        //this.selectedProject = null;
       }
     }
 
