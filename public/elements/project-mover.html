@@ -1,40 +1,12 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/iron-a11y-keys/iron-a11y-keys.html">
-<link rel="import" href="../bower_components/iron-dropdown/iron-dropdown.html">
-<link rel="import" href="../bower_components/iron-overlay-behavior/iron-overlay-behavior.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="task-manager.html">
+<link rel="import" href="modal-overlay.html">
 
 <dom-module id="project-mover">
   <template>
-    <style>
-       :host {
-        display: block;
-        position: fixed;
-        background-color: #FFF;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-        width: 320px;
-        height: 200px;
-        padding: 12px;
-        visibility: hidden;
-        /* center the modal on the screen */
-        top: 50%;
-        left: 50%;
-        margin: -100px 0 0 -160px;
-      }
-      :host(.opened) {
-        visibility: visible;
-      }
-      [slot="dropdown-content"] {
-        background-color: white;
-        line-height: 40px;
-        padding: 0 10px 0 10px;
-        box-shadow: 0px 2px 6px #ccc;
-        list-style: none;
-      }
-    </style>
-
     <firebase-auth user="{{user}}"></firebase-auth>
     <firebase-query
       id="projectQuery"
@@ -49,29 +21,17 @@
       on-keys-pressed="submit">
     </iron-a11y-keys>
 
-    <div class="overlay">
-      <h2>Move to Project</h2>
+    <modal-overlay id="overlay">
+      <h1>Move to Project</h1>
       <input id="input" type="text" value="{{inputText::input}}" autofocus>
       <p>New Project: [[selectedProject.name]]</p>
-    </div>
-    
-    <!-- keeping this around, we'll probably want some viz on matching projects -->
-    <!--<iron-dropdown id="dropdown">
-        <div slot="dropdown-content"> 
-          <input id="input" type="text">
-          <iron-selector id="selector" selected="{{selectedProject}}" attr-for-selected="val">
-        <template is="dom-repeat" items="[[projects]]" as="project">
-          <div val$="[[project]]" >[[project.name]]</div>
-        </template>
-      </iron-selector>
-        </div>
-    </iron-dropdown>
-    -->
+      <paper-button id="submit" tabindex="-1" class="primary" on-tap="close">Cancel</paper-button>
+    </modal-overlay>
+
   </template>
 
   <script>
-    class ProjectMover extends Polymer.mixinBehaviors(
-      [Polymer.IronOverlayBehaviorImpl], Polymer.Element) {
+    class ProjectMover extends Polymer.Element {
       static get is() { return 'project-mover'; }
 
       static get properties() {
@@ -82,10 +42,6 @@
           inputText: {
             type: String,
             observer: '_inpChanged'
-          },
-          withBackdrop: {
-            type: Boolean,
-            value: true
           },
           selectedProject: Object,
           fuse: Object,
@@ -106,10 +62,6 @@
       ready() {
         super.ready();
         this.target = this;
-        this.setAttribute('role', 'dialog');
-        this.setAttribute('aria-modal', 'true');
-        this.addEventListener('transitionend', (e)=>this._transitionEnd(e));
-        this.addEventListener('iron-overlay-canceled', (e)=>this._onCancel(e));
         this.addEventListener('keydown', e => e.stopPropagation());
         this.fuse = new Fuse(this.projects, this.fuseOptions);
       }
@@ -121,7 +73,14 @@
           this.task = null;
         }
 
-        super.open();
+        this.$.overlay.open();
+        this.$.input.focus();
+      }
+
+      close(e) {
+        this.$.input.value = "";
+        this.selectedProject = null;
+        this.$.overlay.close();
       }
 
       submit() {
@@ -137,41 +96,6 @@
           this.selectedProject = result[0];
         }
       }
-
-      _renderOpened() {
-        this.$.input.value = "";
-        this.restoreFocusOnClose = true;
-        this.backdropElement.style.display = 'none';
-        this.classList.add('opened');
-        this.$.input.focus();
-      }
-      _renderClosed() {
-        this.classList.remove('opened');
-        this.$.input.value = "";
-        this.selectedProject = null;
-      }
-      _onCancel(e) {
-        // Don't restore focus when the overlay is closed after a mouse event
-        if (e.detail instanceof MouseEvent) {
-          this.restoreFocusOnClose = false;
-        }
-      }
-      _transitionEnd(e) {
-        if (e.target !== this || e.propertyName !== 'transform') {
-          return;
-        }
-        if (this.opened) {
-          this._finishRenderOpened();
-        } else {
-          this._finishRenderClosed();
-          this.backdropElement.style.display = '';
-        }
-      }
-      get _focusableNodes() {
-        return [this.$.input, this.$.closeBtn];
-      }
-      refit() {}
-      notifyResize() {}
     }
 
     window.customElements.define(ProjectMover.is, ProjectMover);

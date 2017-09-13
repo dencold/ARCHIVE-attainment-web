@@ -63,34 +63,11 @@
       }
     </style>
 
-    <firebase-auth user="{{user}}"></firebase-auth>
-    <firebase-query
-      id="projectQuery"
-      path="/users/[[user.uid]]/projects"
-      data="{{projects}}">
-    </firebase-query>
-    <task-manager id="taskMgr"></task-manager>
-
-    <iron-a11y-keys
-      target="[[target]]"
-      keys="enter"
-      on-keys-pressed="submit">
-    </iron-a11y-keys>
-
-    <iron-a11y-keys
-      target="[[target]]"
-      keys="esc"
-      on-keys-pressed="close">
-    </iron-a11y-keys>
-
     <div class="modal-overlay closed" id="overlay"></div>
 
     <div class="modal closed" id="modal">
       <div class="modal-guts">
-        <h1>Move to Project</h1>
-        <input id="input" type="text" value="{{inputText::input}}" autofocus>
-        <p>New Project: [[selectedProject.name]]</p>
-        <paper-button id="submit" tabindex="-1" class="primary" on-tap="close">Cancel</paper-button>
+        <slot></slot>
       </div>
     </div>
 
@@ -100,87 +77,25 @@
     class ModalOverlay extends Polymer.Element {
       static get is() { return 'modal-overlay'; }
 
-      static get properties() {
-        return {
-          projects: Object,
-          task: Object,
-          target: Object,
-          inputText: {
-            type: String,
-            observer: '_inpChanged'
-          },
-          selectedProject: Object,
-          fuse: Object,
-          fuseOptions: {
-            type: Object,
-            value: {
-              shouldSort: true,
-              threshold: 0.6,
-              location: 0,
-              distance: 100,
-              maxPatternLength: 32,
-              minMatchCharLength: 1,
-              keys: ["name"]
-            }
-          }
-        }
-      }
-      ready() {
-        super.ready();
-        this.target = this;
-        this.addEventListener('keydown', e => e.stopPropagation());
-        this.fuse = new Fuse(this.projects, this.fuseOptions);
-      }
-
       open(e) {
+        /*
         if (e.detail.task) {
           this.task = e.detail.task;
         } else {
           this.task = null;
         }
+        */
 
         this.$.modal.classList.remove("closed");
         this.$.overlay.classList.remove("closed");
-        this.$.input.focus();
-      }
-
-      submit() {
-        if (this.task && this.selectedProject) {
-          this.$.taskMgr.updateProject(this.task.$key, this.selectedProject.$key);
-          this.close();
-        }
+       // this.$.input.focus();
       }
 
       close() {
         this.$.modal.classList.add('closed');
         this.$.overlay.classList.add('closed');
-        this.$.input.value = "";
-        this.selectedProject = null;
-      }
-
-      _inpChanged(newInp, oldInp) {
-        var result = this.fuse.search(newInp);
-        if (result.length > 0) {
-          this.selectedProject = result[0];
-        }
-      }
-
-      _onCancel(e) {
-        // Don't restore focus when the overlay is closed after a mouse event
-        if (e.detail instanceof MouseEvent) {
-          this.restoreFocusOnClose = false;
-        }
-      }
-      _transitionEnd(e) {
-        if (e.target !== this || e.propertyName !== 'transform') {
-          return;
-        }
-        if (this.opened) {
-          this._finishRenderOpened();
-        } else {
-          this._finishRenderClosed();
-          this.backdropElement.style.display = '';
-        }
+        //this.$.input.value = "";
+        //this.selectedProject = null;
       }
     }
 

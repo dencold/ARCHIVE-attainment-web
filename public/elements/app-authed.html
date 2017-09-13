@@ -20,7 +20,6 @@
 <link rel="import" href="page-settings.html">
 <link rel="import" href="page-404.html">
 <link rel="import" href="project-mover.html">
-<link rel="import" href="modal-overlay.html">
 
 <dom-module id="app-authed">
   <template>
@@ -83,9 +82,8 @@
     </style>
 
     <firebase-auth id="auth" user="{{user}}"></firebase-auth>
-    
-    <!--<project-mover id="mover"></project-mover>-->
-    <modal-overlay id="mover"></modal-overlay>
+
+    <project-mover id="mover"></project-mover>
     <app-location route="{{route}}"></app-location>
     <app-route
         route="{{route}}"
@@ -145,7 +143,7 @@
           </iron-selector>
           </div>
         </app-drawer>
-        
+
         <!-- Main content -->
         <iron-pages
             selected="[[routeData.page]]"
@@ -226,7 +224,7 @@
         if (typeof user == 'undefined') {
           return false;
         }
-        
+
         if (user != null) {
           return false;
         }
@@ -238,7 +236,7 @@
         this.email = "";
         this.password = "";
       }
-      
+
       _toggleDrawer() {
         this.$.drawer.toggle();
       }
@@ -246,11 +244,11 @@
       gotoInbox() {
         this.set('route.path', '/project-detail/' + this.inboxId);
       }
-      
+
       gotoAction() {
         this.set('route.path', '/action');
       }
-   
+
       gotoProjects() {
         this.set('route.path', '/projects');
       }
