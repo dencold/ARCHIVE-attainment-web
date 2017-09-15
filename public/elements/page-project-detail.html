@@ -1,7 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html">
@@ -20,10 +19,6 @@
       :host {
         display: block;
         padding: 20px;
-      }
-
-      paper-dialog {
-        padding: 25px;
       }
     </style>
     <style include="iron-flex"></style>
@@ -52,14 +47,14 @@
       on-error="handleError">
     </firebase-query>
 
-    <paper-dialog id="dialog">
+    <modal-overlay id="overlay">
       <h2>Archive Project?</h2>
       <p>This will archive the project and all tasks associated with it</p>
       <div class="buttons">
-        <paper-button dialog-dismiss autofocus>Cancel</paper-button>
-        <paper-button dialog-confirm on-tap="handleArchive">Accept</paper-button>
+        <paper-button on-tap="handleCancel" autofocus>Cancel</paper-button>
+        <paper-button on-tap="handleArchive">Accept</paper-button>
       </div>
-    </paper-dialog>
+    </modal-overlay>
 
     <input-editor class="title" text="{{project.name}}"></input-editor>
     <markdown-editor text="{{project.notes}}"></markdown-editor>
@@ -118,7 +113,11 @@
       }
 
       openDialog() {
-        this.$.dialog.open();
+        this.$.overlay.open();
+      }
+      
+      handleCancel() {
+        this.$.overlay.close();
       }
 
       handleArchive() {
