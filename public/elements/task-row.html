@@ -1,4 +1,3 @@
-<link rel="import" href="../bower_components/iron-a11y-keys/iron-a11y-keys.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
@@ -61,27 +60,6 @@
       path="/users/[[user.uid]]/projects/[[task.projectId]]"
       data="{{project}}">
     </firebase-document>
-
-    <iron-a11y-keys
-      target="[[target]]"
-      keys="s"
-      on-keys-pressed="toggleStar">
-    </iron-a11y-keys>
-    <iron-a11y-keys
-      target="[[target]]"
-      keys="c"
-      on-keys-pressed="complete">
-    </iron-a11y-keys>
-    <iron-a11y-keys
-      target="[[target]]"
-      keys="d"
-      on-keys-pressed="editOn">
-    </iron-a11y-keys>
-    <iron-a11y-keys
-      target="[[target]]"
-      keys="o"
-      on-keys-pressed="openTask">
-    </iron-a11y-keys>
 
     <div id="row" class="layout horizontal highlight">
       <iron-icon class="item point" icon="[[starIcon]]" on-tap="toggleStar"></iron-icon>
@@ -154,6 +132,18 @@
         if (e.key == 'm') {
           this.moveProject(e);
         }
+        else if (e.key == 's') {
+          this.toggleStar();
+        }
+        else if (e.key == 'c') {
+          this.complete();
+        }
+        else if (e.key == 'o') {
+          this.openTask();
+        }
+        else if (e.key == 'd') {
+          this.editOn();
+        }
       }
 
       moveProject(e) {
@@ -223,7 +213,6 @@
       openTask() {
         this.set('route.path', 'task/' + this.task.$key);
       }
-
     }
 
     window.customElements.define(TaskRow.is, TaskRow);
