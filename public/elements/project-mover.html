@@ -1,5 +1,4 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../bower_components/iron-a11y-keys/iron-a11y-keys.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="task-manager.html">
@@ -15,15 +14,15 @@
     </firebase-query>
     <task-manager id="taskMgr"></task-manager>
 
-    <iron-a11y-keys
-      target="[[target]]"
-      keys="enter"
-      on-keys-pressed="submit">
-    </iron-a11y-keys>
-
     <modal-overlay id="overlay">
       <h1>Move to Project</h1>
-      <input id="input" type="text" value="{{inputText::input}}" autofocus>
+      <input
+        id="input"
+        type="text"
+        value="{{inputText::input}}"
+        on-keydown="handleKeys"
+        autofocus
+      >
       <p>New Project: [[selectedProject.name]]</p>
       <paper-button id="submit" tabindex="-1" class="primary" on-tap="close">Cancel</paper-button>
     </modal-overlay>
@@ -62,8 +61,18 @@
       ready() {
         super.ready();
         this.target = this;
-        this.addEventListener('keydown', e => e.stopPropagation());
         this.fuse = new Fuse(this.projects, this.fuseOptions);
+      }
+
+      handleKeys(e) {
+        // we don't want keyboard shortcuts being acted on outside the modal
+        e.stopPropagation();
+
+        if (e.key == 'Enter') {
+          this.submit();
+        } else if (e.key == 'Escape') {
+          this.close();
+        }
       }
 
       open(e) {
@@ -73,11 +82,14 @@
           this.task = null;
         }
 
+        // clear out any preexisting input
+        this.$.input.value = "";
+        this.selectedProject = null;
         this.$.overlay.open();
         this.$.input.focus();
       }
 
-      close(e) {
+      close() {
         this.$.input.value = "";
         this.selectedProject = null;
         this.$.overlay.close();

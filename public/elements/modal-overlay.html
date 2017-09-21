@@ -30,6 +30,7 @@
 
         background: white;
         box-shadow: 0 0 60px 10px rgba(0, 0, 0, 0.9);
+        outline: none;
       }
       .closed {
         display: none;
@@ -56,9 +57,10 @@
       }
     </style>
 
-    <div class="modal-overlay closed" id="overlay"></div>
+    <div class="modal-overlay closed" id="overlay" on-tap="close"></div>
 
-    <div class="modal closed" id="modal">
+    <!-- we need tabindex here in order to enable keydown events -->
+    <div class="modal closed" id="modal" tabindex="0" on-keydown="handleKeys">
       <div class="modal-guts">
         <slot></slot>
       </div>
@@ -70,7 +72,13 @@
     class ModalOverlay extends Polymer.Element {
       static get is() { return 'modal-overlay'; }
 
-      open(e) {
+      handleKeys(e) {
+        if (e.key == 'Escape') {
+          this.close();
+        }
+      }
+
+      open() {
         this.$.modal.classList.remove("closed");
         this.$.overlay.classList.remove("closed");
       }
