@@ -2,6 +2,7 @@
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="task-manager.html">
+<link rel="import" href="project-manager.html">
 <link rel="import" href="modal-overlay.html">
 
 <dom-module id="project-mover">
@@ -13,6 +14,7 @@
       data="{{projects}}">
     </firebase-query>
     <task-manager id="taskMgr"></task-manager>
+    <project-manager id="projectMgr"></project-manager>
 
     <modal-overlay id="overlay">
       <h1>Move to Project</h1>
@@ -23,8 +25,23 @@
         on-keydown="handleKeys"
         autofocus
       >
-      <p>New Project: [[selectedProject.name]]</p>
-      <paper-button id="submit" tabindex="-1" class="primary" on-tap="close">Cancel</paper-button>
+      <div>
+        <h4>Move to Existing</h4>
+        <p>[[selectedProject.name]]</p>
+        <paper-button tabindex="0" class="primary" on-tap="submit">
+          Move
+        </paper-button>
+      </div>
+      <div>
+        <h4>Create New Project</h4>
+        <p>[[inputText]]</p>
+        <paper-button tabindex="0" class="primary" on-tap="createMove">
+          Create
+        </paper-button>
+      </div>
+      <paper-button tabindex="0" class="primary" on-tap="close">
+        Cancel
+      </paper-button>
     </modal-overlay>
 
   </template>
@@ -100,6 +117,21 @@
           this.$.taskMgr.updateProject(this.task.$key, this.selectedProject.$key);
           this.close();
         }
+      }
+
+      createMove() {
+        if (this.task) {
+          this.$.projectMgr.create(this.$.input.value, this.user.uid)
+            .then(projectKey => {
+              return this.$.taskMgr.updateProject(this.task.$key, projectKey);
+            })
+            .then( () => this.close())
+            .catch(this.handleError);
+        }
+      }
+
+      handleError(error) {
+        console.log(error);
       }
 
       _inpChanged(newInp, oldInp) {

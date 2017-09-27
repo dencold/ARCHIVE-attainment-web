@@ -47,6 +47,50 @@
           .catch(error => console.log("ERROR archiving project: " + error.message));
       }
 
+      create(name, userId) {
+        var projectRef = firebase.database().ref(
+          "users/" + userId + "/projects/"
+        );
+
+        return this.checkValid(name, userId)
+          .then( () => {
+            // use the push api to create a new project
+            return projectRef.push({
+              name: name,
+              createdAt: Date.now()
+            });
+          })
+          .then( project => {
+            return project.key;
+          })
+          // if there is an error, we want to propogate to caller
+          //.catch(function(err) { console.log(err); })
+      }
+
+      checkValid(name, userId) {
+        return new Promise(function(resolve, reject) {
+          var projectRef = firebase.database().ref(
+            "users/" + userId + "/projects/"
+          );
+
+          if (!name) {
+            return reject("Empty string is not valid");
+          }
+
+          projectRef.orderByChild('name').equalTo(name).once('value')
+            .then( snap => {
+              if (snap.exists()) {
+                // reject if the project name already exists, otherwise
+                // resolve the promise
+                return reject("Project name already exists");
+              } else {
+                resolve();
+              }
+            })
+            .catch(function(err) { reject(err) });
+        });
+      }
+
     }
 
     window.customElements.define(ProjectManager.is, ProjectManager);
