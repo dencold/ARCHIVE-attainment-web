@@ -4,9 +4,23 @@
 <link rel="import" href="task-manager.html">
 <link rel="import" href="project-manager.html">
 <link rel="import" href="modal-overlay.html">
+<link rel="import" href="shared-styles.html">
 
 <dom-module id="project-mover">
   <template>
+    <style include="shared-styles"></style>
+    <style include="iron-flex"></style>
+    <style include="iron-flex-factors"></style>
+    <style>
+      .choicebox {
+        padding: 30px;
+        margin: 10px;
+        background-color: lightgray;
+      }
+    </style>
+
+
+
     <firebase-auth user="{{user}}"></firebase-auth>
     <firebase-query
       id="projectQuery"
@@ -25,23 +39,27 @@
         on-keydown="handleKeys"
         autofocus
       >
-      <div>
-        <h4>Move to Existing</h4>
-        <p>[[selectedProject.name]]</p>
-        <paper-button tabindex="0" class="primary" on-tap="submit">
-          Move
-        </paper-button>
+      <div class="layout horizontal center-justified">
+        <div class="choicebox">
+          <h4>Move to Existing</h4>
+          <p>[[selectedProject.name]]</p>
+          <paper-button tabindex="0" class="primary" on-tap="submit">
+            Move
+          </paper-button>
+        </div>
+        <div class="choicebox">
+          <h4>Create New Project</h4>
+          <p>[[inputText]]</p>
+          <paper-button tabindex="0" class="primary" on-tap="createMove">
+            Create
+          </paper-button>
+        </div>
       </div>
-      <div>
-        <h4>Create New Project</h4>
-        <p>[[inputText]]</p>
-        <paper-button tabindex="0" class="primary" on-tap="createMove">
-          Create
-        </paper-button>
-      </div>
+      <div class="layout horizontal center-justified">
       <paper-button tabindex="0" class="primary" on-tap="close">
         Cancel
       </paper-button>
+      </div>
     </modal-overlay>
 
   </template>
