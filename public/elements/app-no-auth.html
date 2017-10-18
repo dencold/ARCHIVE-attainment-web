@@ -1,28 +1,27 @@
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 
 <dom-module id="app-no-auth">
   <template>
-    <style>
+    <style include="shared-styles">
       body {
         margin: 0;
         font-family: 'Roboto', 'Noto', sans-serif;
         background-color: #eee;
       }
-
     </style>
+    <style include="iron-flex"></style>
 
-    <firebase-auth id="auth" user="{{user}}"></firebase-auth>
-    
-    <div style="margin: 0 auto; width: 500px">  
+    <firebase-auth id="auth" provider="google" user="{{user}}"></firebase-auth>
+
+    <div class="horizontal center-justified layout">
       <img src="/images/attain-logo.jpg" height="500px" width="500px" />
     </div>
-    <div style="margin: 0 auto; width: 500px">
-      <paper-input value="{{email}}" type="email" label="Email Address"></paper-input>
-      <paper-input value="{{password}}" type="password" label="Password"></paper-input>
-    </div>
-    <div style="margin: 0 auto; width: 75px">
-      <paper-button on-tap="login">Log in</paper-button>
+    <div class="horizontal center-justified layout">
+      <paper-button class="primary" on-tap="loginWithGoogle">
+        Log in with Google
+      </paper-button>
     </div>
 
   </template>
@@ -39,6 +38,7 @@
         }
       }
 
+      // no longer in use
       login() {
         this.$.auth.signInWithEmailAndPassword(
           this.email,
@@ -46,7 +46,28 @@
         ).then( () => this.resetLogin()
         ).catch(error => console.log("ERROR: " + error.message));
       }
-      
+
+      loginWithGoogle() {
+        // Sign in with popup:
+        this.$.auth.signInWithRedirect();
+
+        this.$.auth.getRedirectResult()
+          .then(result => {
+            // The firebase.User instance:
+            this.user = result.user;
+            var credential = result.credential;
+          })
+          .catch(error => {
+            // In case of auth/account-exists-with-different-credential error,
+            // you can fetch the providers using this:
+            if (error.code === 'auth/account-exists-with-different-credential') {
+              console.log("ERROR: Account already exists with different provider");
+            } else {
+              console.log(error);
+            }
+          });
+      }
+
       resetLogin() {
         this.email = "";
         this.password = "";
